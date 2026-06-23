@@ -10,7 +10,7 @@ import seaborn as sns
 import matplotlib.pyplot as  plt
 import os 
 import streamlit as st
-
+import io
 def data_quality_report(df):
     return {
         "shape": df.shape,
@@ -20,25 +20,64 @@ def data_quality_report(df):
         "dtypes": df.dtypes,
         "unique_counts": df.nunique()
     }
+def md(text):
+    st.markdown(f"{text}", unsafe_allow_html=True)
+md("<h1> merging the data </h1>")
+
+#--------------------------------------------------------------------------------------------------------
+            #----------------------------- CODE BEGINS ------------------------------
+#--------------------------------------------------------------------------------------------------------
 df1 = pd.read_csv("train.csv",index_col=0)#index_col to remove the default indexing and giving the new one
 df2 = pd.read_csv("test.csv",index_col=0)
-# st.write(f'df1.shape=>{df1.head()}')
-# st.write(f'df2.shape=>{df2.head()}')
 # st.write(df1.info())
+md("<h1 style = 'color : red;'>  TRAIN CSV</h1>")
+st.write(df1.shape)
+st.dataframe(df1.head())
 st.write(df1.describe(include='all'))
+buffer = io.StringIO()
+df1.info(buf= buffer)
+# st.text(buffer.getvalue())
+st.write(df1.isna().sum()[df1.isna().sum()>0])
+md("<h1 style = 'color : red;'>  TEST CSV</h1>")
+st.write(df2.shape)
+st.dataframe(df2.head())
+st.write(df2.describe(include='all'))
+st.write(df2.isna().sum()[df1.isna().sum()>0])
 
+#checking the target column is present in df2 or not if not then add with 0  values 
 if "SalePrice" not in df2.columns:
-    df2['SalePrice']=0
+    df2['SalePrice']=0  
 df = pd.concat(
     [df1,df2],
     axis=0,
  )
+md("<h1 style= 'color : purple; background : white; font-size:130px; text-align:center;'>{ DF }</h1>")
 st.write(f'df.shape=> {df.shape}')
 st.dataframe(df.head())
 options = st.selectbox("Choose Columns",df.columns)
-st.write(options)
+figOfOp,axOfOp= plt.subplots()
+try:
+    sns.heatmap(df[[f'{options}']],ax=axOfOp) 
+except ValueError:
+
+    counts = df[options].fillna("NULL").value_counts()
+    print(f"\033[32m{counts}[0m")   
+    sns.barplot(x=counts.index, y=counts.values, ax=axOfOp)
+
+    axOfOp.set_title("Value Count (Including NULL)")
+    axOfOp.set_xlabel(f'{options}')
+    axOfOp.set_ylabel("Count")
+    for containers in axOfOp.containers:
+        axOfOp.bar_label(containers) 
+#--------------- OR -----------// because there is only one container
+    axOfOp.bar_label(axOfOp.containers[0])
+
+st.pyplot(figOfOp)
+
+
 
 # %%
+md("<h1> fitlerted the first df_null</h1>")
 df_null =df[df.isnull().sum()[df.isnull().sum()>0].index]
 st.dataframe(df_null.head())
 # for i in df_null.columns:

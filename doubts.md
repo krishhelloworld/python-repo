@@ -436,6 +436,85 @@ detect → analyze → validate → apply
 ```
 
 ---
+# Real-world example
+
+Suppose two datasets:
+
+---
+
+## Dataset A
+
+```csv id="x7s7jc"
+50,51,52,49,50,53,200
+```
+
+* strong positive skew
+* moderate/high kurtosis
+
+Interpretation:
+
+> one-sided extreme values
+
+---
+
+## Dataset B
+
+```csv id="8cye17"
+-200,49,50,51,52,300
+```
+
+* skewness may become small
+* kurtosis huge
+
+Interpretation:
+
+> extreme outliers on both sides
+
+---
+
+# In ML preprocessing
+
+A common workflow:
+
+```python id="z5f1zm"
+print(df.skew())
+print(df.kurt())
+```
+
+Then:
+
+### If skewness high:
+
+* log transform
+* Box-Cox
+* Yeo-Johnson
+
+### If kurtosis high:
+
+* robust scaler
+* clipping/winsorization
+* anomaly handling
+
+---
+
+# Good intuition
+
+## Skewness
+
+asks:
+
+> “**Does the distribution lean?**”
+
+---
+
+## Kurtosis
+
+asks:
+
+> “**How dangerous are the tails?**”
+
+
+---
 
 ## 🟢 Correct Kaggle thinking:
 

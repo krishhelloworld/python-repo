@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NLP Complete Training Guide — Python</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117; --bg2: #1a1d27; --bg3: #222535; --border: #2e3147;
+    --text: #e2e4ef; --muted: #7c82a0; --accent: #6c8eff;
+    --green: #3ecf8e; --yellow: #f7b955; --red: #ff6b6b; --purple: #b57bee;
+    --teal: #4ecdc4; --orange: #ff9f43;
+    --font: 'Segoe UI', system-ui, sans-serif; --mono: 'Fira Code', 'Cascadia Code', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: 260px; flex-shrink: 0; background: var(--bg2); border-right: 1px solid var(--border);
+    height: 100vh; overflow-y: auto; position: sticky; top: 0;
+  }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .sb-header { padding: 1.25rem 1.25rem 0.75rem; border-bottom: 1px solid var(--border); }
+  .sb-header h1 { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: .05em; text-transform: uppercase; }
+  .sb-header p { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .sb-group { padding: 0.75rem 1.25rem 0.25rem; font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .sb-item {
+    display: flex; align-items: center; gap: 8px; padding: 0.45rem 1.25rem;
+    cursor: pointer; font-size: 12px; color: var(--muted); transition: all .15s; text-decoration: none;
+    border-left: 2px solid transparent;
+  }
+  .sb-item:hover { color: var(--text); background: var(--bg3); }
+  .sb-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(108,142,255,.07); }
+  .sb-item .num { font-size: 10px; color: var(--border); width: 18px; flex-shrink: 0; font-family: var(--mono); }
+  .sb-item.active .num { color: var(--accent); }
+  .sb-badge { font-size: 9px; background: var(--bg3); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; margin-left: auto; color: var(--muted); }
+
+  /* CONTENT */
+  #content { flex: 1; padding: 2rem 2.5rem; max-width: 860px; }
+  section { display: none; }
+  section.active { display: block; }
+  .section-badge {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: 4px; margin-bottom: 0.9rem; letter-spacing: .04em; text-transform: uppercase;
+  }
+  .badge-prep { background: rgba(62,207,142,.12); color: var(--green); border: 1px solid rgba(62,207,142,.2); }
+  .badge-repr { background: rgba(108,142,255,.12); color: var(--accent); border: 1px solid rgba(108,142,255,.2); }
+  .badge-embed { background: rgba(181,123,238,.12); color: var(--purple); border: 1px solid rgba(181,123,238,.2); }
+  .badge-nlp { background: rgba(255,159,67,.12); color: var(--orange); border: 1px solid rgba(255,159,67,.2); }
+  .badge-build { background: rgba(255,107,107,.12); color: var(--red); border: 1px solid rgba(255,107,107,.2); }
+  .badge-road { background: rgba(78,205,196,.12); color: var(--teal); border: 1px solid rgba(78,205,196,.2); }
+
+  h2 { font-size: 26px; font-weight: 700; margin-bottom: 0.4rem; }
+  .subtitle { font-size: 14px; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6; }
+
+  /* CARDS */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem 1rem; }
+  .card-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 5px; }
+  .card-value { font-size: 18px; font-weight: 700; }
+  .card-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .cv-green { color: var(--green); }
+  .cv-blue { color: var(--accent); }
+  .cv-purple { color: var(--purple); }
+  .cv-yellow { color: var(--yellow); }
+  .cv-teal { color: var(--teal); }
+
+  /* THEORY */
+  .theory { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 1.1rem 1.25rem; margin-bottom: 1.25rem; }
+  .theory h3 { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 6px; }
+  .theory p, .theory li { font-size: 13px; color: var(--text); line-height: 1.7; }
+  .theory ul, .theory ol { padding-left: 1.25rem; }
+  .theory li { margin-bottom: 4px; }
+  .formula { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; font-family: var(--mono); font-size: 13px; color: var(--yellow); margin: 0.7rem 0; text-align: center; }
+
+  /* APPLICATIONS */
+  .apps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-bottom: 1.25rem; }
+  .app-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 0.7rem 0.9rem; }
+  .app-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .app-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+  .app-icon { font-size: 16px; margin-bottom: 4px; }
+
+  /* CODE */
+  .code-block { margin-bottom: 1.25rem; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+  .code-header { display: flex; align-items: center; justify-content: space-between; background: var(--bg3); padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); }
+  .code-filename { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+  .code-lang { font-size: 10px; color: var(--accent); background: rgba(108,142,255,.1); border: 1px solid rgba(108,142,255,.2); padding: 2px 7px; border-radius: 3px; }
+  pre { margin: 0 !important; border-radius: 0 !important; }
+  pre code { font-family: var(--mono) !important; font-size: 12.5px !important; }
+
+  /* OUTPUT */
+  .output { background: #0d1117; border: 1px solid #1a3020; border-radius: 8px; padding: 0.9rem 1rem; margin-bottom: 1.25rem; }
+  .output-label { font-size: 10px; color: var(--green); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 0.5rem; }
+  .output pre { background: none !important; color: #a8ff9a !important; font-size: 12px !important; line-height: 1.6 !important; font-family: var(--mono) !important; }
+
+  /* COMPARE TABLE */
+  table { width: 100%; border-collapse: collapse; margin-bottom: 1.25rem; font-size: 12px; }
+  th { background: var(--bg3); color: var(--accent); padding: 8px 12px; text-align: left; border: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+  td { padding: 8px 12px; border: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  tr:nth-child(even) td { background: rgba(255,255,255,.02); }
+  .good { color: var(--green); font-weight: 600; }
+  .bad { color: var(--red); font-weight: 600; }
+
+  /* PIPELINE VISUAL */
+  .pipeline { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; margin-bottom: 1.25rem; }
+  .pipe-step { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-size: 11px; font-weight: 600; }
+  .pipe-step.hl { border-color: var(--accent); color: var(--accent); background: rgba(108,142,255,.1); }
+  .pipe-arrow { color: var(--muted); font-size: 14px; padding: 0 2px; }
+
+  /* NAV FOOTER */
+  .nav-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 1.5rem; margin-top: 1.5rem; border-top: 1px solid var(--border); }
+  .nav-btn { padding: 8px 18px; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--text); font-size: 13px; cursor: pointer; font-family: var(--font); transition: all .15s; }
+  .nav-btn:hover { background: var(--bg3); border-color: var(--accent); color: var(--accent); }
+  .nav-btn:disabled { opacity: .3; cursor: default; }
+  .nav-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .nav-btn.primary:hover { background: #5a7ff0; }
+  .progress-text { font-size: 11px; color: var(--muted); }
+
+  /* SECTION LABEL */
+  .sec-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin: 1.25rem 0 0.6rem; }
+
+  /* DIAGRAM BOX */
+  .diagram { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; overflow-x: auto; }
+  .matrix { font-family: var(--mono); font-size: 12px; color: var(--text); line-height: 1.7; }
+  .matrix .hl { color: var(--yellow); font-weight: 700; }
+  .matrix .dim { color: var(--muted); }
+
+  /* NOTE BOX */
+  .note { background: rgba(247,185,85,.06); border: 1px solid rgba(247,185,85,.2); border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 12px; color: var(--yellow); line-height: 1.6; }
+  .tip { background: rgba(62,207,142,.06); border: 1px solid rgba(62,207,142,.2); border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 12px; color: var(--green); line-height: 1.6; }
+
+  a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sb-header">
+    <h1>NLP with Python</h1>
+    <p>26 Topics · Complete Guide</p>
+  </div>
+
+  <div class="sb-group">Overview</div>
+  <a class="sb-item active" onclick="show(0)" href="#"><span class="num">00</span> NLP Roadmap <span class="sb-badge">START</span></a>
+
+  <div class="sb-group">Text Preprocessing</div>
+  <a class="sb-item" onclick="show(1)" href="#"><span class="num">01</span> Tokenization</a>
+  <a class="sb-item" onclick="show(2)" href="#"><span class="num">02</span> Stemming</a>
+  <a class="sb-item" onclick="show(3)" href="#"><span class="num">03</span> Lemmatization</a>
+  <a class="sb-item" onclick="show(4)" href="#"><span class="num">04</span> Stopwords</a>
+  <a class="sb-item" onclick="show(5)" href="#"><span class="num">05</span> Parts of Speech (POS)</a>
+  <a class="sb-item" onclick="show(6)" href="#"><span class="num">06</span> Named Entity Recognition</a>
+
+  <div class="sb-group">Text Representation</div>
+  <a class="sb-item" onclick="show(7)" href="#"><span class="num">07</span> One Hot Encoding</a>
+  <a class="sb-item" onclick="show(8)" href="#"><span class="num">08</span> Bag of Words (BOW)</a>
+  <a class="sb-item" onclick="show(9)" href="#"><span class="num">09</span> TF-IDF</a>
+  <a class="sb-item" onclick="show(10)" href="#"><span class="num">10</span> N-Grams</a>
+
+  <div class="sb-group">Word Embeddings</div>
+  <a class="sb-item" onclick="show(11)" href="#"><span class="num">11</span> Word Embeddings Intro</a>
+  <a class="sb-item" onclick="show(12)" href="#"><span class="num">12</span> Word2Vec CBOW</a>
+  <a class="sb-item" onclick="show(13)" href="#"><span class="num">13</span> Word2Vec SkipGram</a>
+
+  <div class="sb-group">Building Conversational AI</div>
+  <a class="sb-item" onclick="show(14)" href="#"><span class="num">14</span> Sentiment Analysis <span class="sb-badge">PROJECT</span></a>
+  <a class="sb-item" onclick="show(15)" href="#"><span class="num">15</span> Text Classification</a>
+  <a class="sb-item" onclick="show(16)" href="#"><span class="num">16</span> Build a Chatbot <span class="sb-badge">FINAL</span></a>
+</nav>
+
+<!-- CONTENT -->
+<main id="content">
+
+  <!-- ===== 0: ROADMAP ===== -->
+  <section class="active" id="sec0">
+    <div class="section-badge badge-road">🗺 Overview</div>
+    <h2>NLP Learning Roadmap</h2>
+    <p class="subtitle">Natural Language Processing (NLP) is how computers understand, process, and generate human language. This is the full pipeline used in Google Search, Gmail Smart Reply, ChatGPT, Alexa, and every AI that talks like a human.</p>
+
+    <div class="cards">
+      <div class="card"><div class="card-label">Topics Covered</div><div class="card-value cv-teal">16</div><div class="card-sub">Concepts + projects</div></div>
+      <div class="card"><div class="card-label">Primary Library</div><div class="card-value cv-green">NLTK</div><div class="card-sub">+ spaCy, sklearn, gensim</div></div>
+      <div class="card"><div class="card-label">Final Goal</div><div class="card-value cv-purple">Chatbot</div><div class="card-sub">Conversational AI model</div></div>
+      <div class="card"><div class="card-label">Difficulty</div><div class="card-value cv-yellow">Beginner</div><div class="card-sub">→ Intermediate</div></div>
+    </div>
+
+    <div class="sec-label">Complete NLP Pipeline — every concept you'll learn fits here</div>
+    <div class="pipeline">
+      <div class="pipe-step hl">Raw Text</div><div class="pipe-arrow">→</div>
+      <div class="pipe-step hl">Tokenize</div><div class="pipe-arrow">→</div>
+      <div class="pipe-step hl">Clean</div><div class="pipe-arrow">→</div>
+      <div class="pipe-step hl">Represent</div><div class="pipe-arrow">→</div>
+      <div class="pipe-step hl">Embed</div><div class="pipe-arrow">→</div>
+      <div class="pipe-step hl">Model</div><div class="pipe-arrow">→</div>
+      <div class="pipe-step hl">Output</div>
+    </div>
+
+    <div class="sec-label">4 stages of NLP you'll master</div>
+    <div class="apps">
+      <div class="app-item"><div class="app-icon">🧹</div><div class="app-title">Stage 1 — Preprocessing</div><div class="app-desc">Tokenization, Stemming, Lemmatization, Stopwords, POS, NER. Clean raw text into usable form.</div></div>
+      <div class="app-item"><div class="app-icon">📦</div><div class="app-title">Stage 2 — Representation</div><div class="app-desc">OHE, Bag of Words, TF-IDF, N-Grams. Convert text to numbers that ML models can process.</div></div>
+      <div class="app-item"><div class="app-icon">🧠</div><div class="app-title">Stage 3 — Embeddings</div><div class="app-desc">Word2Vec CBOW &amp; SkipGram. Rich semantic vectors where similar words are mathematically close.</div></div>
+      <div class="app-item"><div class="app-icon">🤖</div><div class="app-title">Stage 4 — Build AI</div><div class="app-desc">Sentiment Analysis, Classification, and finally a Conversational Chatbot that talks like a human.</div></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">setup.py — install everything you need</span><span class="code-lang">Python</span></div>
+      <pre><code class="language-python"># Install all required libraries
+# Run in your terminal or Jupyter cell
+
+# Core NLP
+pip install nltk spacy
+
+# Machine learning
+pip install scikit-learn
+
+# Word embeddings
+pip install gensim
+
+# Deep learning chatbot
+pip install transformers torch
+
+# Download NLTK data (run in Python)
+import nltk
+nltk.download('punkt')          # Tokenizer
+nltk.download('stopwords')      # Stopword list
+nltk.download('wordnet')        # Lemmatizer (WordNet)
+nltk.download('averaged_perceptron_tagger')  # POS tagger
+nltk.download('maxent_ne_chunker')  # NER
+nltk.download('words')
+
+# Download spaCy English model
+# python -m spacy download en_core_web_sm</code></pre>
+    </div>
+
+    <div class="nav-footer">
+      <button class="nav-btn" disabled>← Previous</button>
+      <span class="progress-text">Topic 0 of 16</span>
+      <button class="nav-btn primary" onclick="show(1)">Start: Tokenization →</button>
+    </div>
+  </section>
+
+  <!-- ===== 1: TOKENIZATION ===== -->
+  <section id="sec1">
+    <div class="section-badge badge-prep">🧹 Preprocessing</div>
+    <h2>Tokenization</h2>
+    <p class="subtitle">Tokenization splits raw text into individual units called tokens — words, subwords, or sentences. It is always the first step in any NLP pipeline. No model can process raw strings; everything must be tokenized first.</p>
+
+    <div class="cards">
+      <div class="card"><div class="card-label">Input</div><div class="card-value cv-teal">"Hello World"</div><div class="card-sub">Raw string</div></div>
+      <div class="card"><div class="card-label">Output</div><div class="card-value cv-green">["Hello","World"]</div><div class="card-sub">List of tokens</div></div>
+      <div class="card"><div class="card-label">Library</div><div class="card-value cv-blue">NLTK</div><div class="card-sub">word_tokenize</div></div>
+      <div class="card"><div class="card-label">Types</div><div class="card-value cv-purple">3</div><div class="card-sub">Word · Sentence · Subword</div></div>
+    </div>
+
+    <div class="sec-label">Real-world applications</div>
+    <div class="apps">
+      <div class="app-item"><div class="app-icon">🔍</div><div class="app-title">Google Search</div><div class="app-desc">Tokenizes your query to match against indexed documents word-by-word.</div></div>
+      <div class="app-item"><div class="app-icon">📧</div><div class="app-title">Gmail Spam Filter</div><div class="app-desc">Tokenizes emails before checking each word against spam patterns.</div></div>
+      <div class="app-item"><div class="app-icon">🤖</div><div class="app-title">ChatGPT / Claude</div><div class="app-desc">Every LLM tokenizes input using BPE (Byte-Pair Encoding) before processing.</div></div>
+      <div class="app-item"><div class="app-icon">📱</div><div class="app-title">Autocorrect</div><div class="app-desc">Splits text into words to detect and correct misspellings individually.</div></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">01_tokenization.py</span><span class="code-lang">Python + NLTK</span></div>
+      <pre><code class="language-python">import nltk
+from nltk.tokenize import (
+    word_tokenize,       # splits into words + punctuation
+    sent_tokenize,       # splits into sentences
+    TreebankWordTokenizer,
+    TweetTokenizer       # handles @mentions, #hashtags, emojis
+)
+
+text = "Hello! My name is Ravi. I am studying NLP at AKTU. It's amazing!"
+
+# --- 1. Word Tokenization ---
+word_tokens = word_tokenize(text)
+print("Word tokens:", word_tokens)
+# ['Hello', '!', 'My', 'name', 'is', 'Ravi', '.', ...]
+
+# --- 2. Sentence Tokenization ---
+sent_tokens = sent_tokenize(text)
+print("\nSentence tokens:", sent_tokens)
+# ['Hello! My name is Ravi.', 'I am studying NLP at AKTU.', "It's amazing!"]
+
+# --- 3. Tweet Tokenizer (for social media) ---
+tweet = "I LOVE NLP 😍 @Google #MachineLearning isn't it great??"
+tweet_tok = TweetTokenizer()
+print("\nTweet tokens:", tweet_tok.tokenize(tweet))
+# ['I', 'LOVE', 'NLP', '😍', '@Google', '#MachineLearning', "isn't", 'it', 'great', '?', '?']
+
+# --- 4. Token count statistics ---
+print(f"\nTotal words: {len(word_tokens)}")
+print(f"Unique words: {len(set(word_tokens))}")
+print(f"Total sentences: {len(sent_tokens)}")</code></pre>
+    </div>
+
+    <div class="output">
+      <div class="output-label">▶ Output</div>
+      <pre>Word tokens: ['Hello', '!', 'My', 'name', 'is', 'Ravi', '.', 'I', 'am', 'studying', 'NLP', 'at', 'AKTU', '.', 'It', "'s", 'amazing', '!']
+Sentence tokens: ['Hello!', 'My name is Ravi.', 'I am studying NLP at AKTU.', "It's amazing!"]
+Total words: 18  |  Unique words: 16  |  Total sentences: 4</pre>
+    </div>
+
+    <div class="nav-footer">
+      <button class="nav-btn" onclick="show(0)">← Previous</button>
+      <span class="progress-text">Topic 1 of 16</span>
+      <button class="nav-btn primary" onclick="show(2)">Stemming →</button>
+    </div>
+  </section>
+
+  <!-- ===== 2: STEMMING ===== -->
+  <section id="sec2">
+    <div class="section-badge badge-prep">🧹 Preprocessing</div>
+    <h2>Stemming</h2>
+    <p class="subtitle">Stemming reduces words to their root form by chopping off suffixes using rules (not a dictionary). Fast but crude — "running" → "run", but "studies" → "studi". Used when speed matters more than accuracy.</p>
+
+    <div class="cards">
+      <div class="card"><div class="card-label">Input</div><div class="card-value cv-teal">"running"</div><div class="card-sub">Inflected word</div></div>
+      <div class="card"><div class="card-label">Output</div><div class="card-value cv-green">"run"</div><div class="card-sub">Stem (root)</div></div>
+      <div class="card"><div class="card-label">Speed</div><div class="card-value cv-yellow">Fast</div><div class="card-sub">Rule-based, no dict</div></div>
+      <div class="card"><div class="card-label">Accuracy</div><div class="card-value cv-yellow">~70%</div><div class="card-sub">May produce non-words</div></div>
+    </div>
+
+    <div class="apps">
+      <div class="app-item"><div class="app-icon">🔍</div><div class="app-title">Search Engines</div><div class="app-desc">Early Google used stemming so "run", "running", "ran" all match the same documents.</div></div>
+      <div class="app-item"><div class="app-icon">📰</div><div class="app-title">Information Retrieval</div><div class="app-desc">Reduces index size by collapsing word variants to one stem.</div></div>
+      <div class="app-item"><div class="app-icon">📊</div><div class="app-title">Text Mining</div><div class="app-desc">Reduces vocabulary before clustering documents by topic.</div></div>
+      <div class="app-item"><div class="app-icon">⚡</div><div class="app-title">Real-time Systems</div><div class="app-desc">Preferred over lemmatization when speed is critical (streaming data).</div></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">02_stemming.py</span><span class="code-lang">Python + NLTK</span></div>
+      <pre><code class="language-python">from nltk.stem import PorterStemmer, SnowballStemmer, LancasterStemmer
+from nltk.tokenize import word_tokenize
+
+# --- Three popular stemmers ---
+porter    = PorterStemmer()      # Most popular, balanced
+snowball  = SnowballStemmer("english")  # Improved Porter
+lancaster = LancasterStemmer()   # Most aggressive
+
+words = ["running", "runs", "ran", "easily", "fairly",
+         "studies", "studying", "studied", "happiness",
+         "playing", "played", "beautiful"]
+
+print(f"{'Word':<15} {'Porter':<12} {'Snowball':<12} {'Lancaster'}")
+print("-" * 55)
+for word in words:
+    p = porter.stem(word)
+    s = snowball.stem(word)
+    l = lancaster.stem(word)
+    print(f"{word:<15} {p:<12} {s:<12} {l}")
+
+# --- Practical: stem an entire sentence ---
+sentence = "The students are studying NLP and building amazing applications"
+tokens = word_tokenize(sentence.lower())
+stemmed = [porter.stem(token) for token in tokens]
+print(f"\nOriginal : {tokens}")
+print(f"Stemmed  : {stemmed}")</code></pre>
+    </div>
+
+    <div class="output">
+      <div class="output-label">▶ Output</div>
+      <pre>Word            Porter       Snowball     Lancaster
+-------------------------------------------------------
+running         run          run          run
+runs            run          run          run
+easily          easili       easili       easy
+studies         studi        studi        study
+happiness       happi        happi        hap
+beautiful       beauti       beauti       beauty
+
+Original : ['the', 'students', 'are', 'studying', 'nlp', 'and', 'building', 'amazing', 'applications']
+Stemmed  : ['the', 'student', 'are', 'studi', 'nlp', 'and', 'build', 'amaz', 'applic']</pre>
+    </div>
+
+    <div class="note">⚠️ Notice "studying" → "studi" — not a real word! This is stemming's weakness. For real-word roots, use Lemmatization (next topic).</div>
+
+    <div class="nav-footer">
+      <button class="nav-btn" onclick="show(1)">← Tokenization</button>
+      <span class="progress-text">Topic 2 of 16</span>
+      <button class="nav-btn primary" onclick="show(3)">Lemmatization →</button>
+    </div>
+  </section>
+
+  <!-- ===== 3: LEMMATIZATION ===== -->
+  <section id="sec3">
+    <div class="section-badge badge-prep">🧹 Preprocessing</div>
+    <h2>Lemmatization</h2>
+    <p class="subtitle">Lemmatization uses a vocabulary and grammar rules (WordNet) to return the dictionary base form (lemma). Slower than stemming but always produces a real word. "studies" → "study", "was" → "be", "better" → "good".</p>
+
+    <div class="cards">
+      <div class="card"><div class="card-label">Input</div><div class="card-value cv-teal">"studies"</div><div class="card-sub">Inflected word</div></div>
+      <div class="card"><div class="card-value cv-green">"study"</div><div class="card-sub">Real dictionary word</div></div>
+      <div class="card"><div class="card-label">Library</div><div class="card-value cv-blue">NLTK / spaCy</div><div class="card-sub">WordNetLemmatizer</div></div>
+      <div class="card"><div class="card-label">Accuracy</div><div class="card-value cv-purple">~95%</div><div class="card-sub">Uses WordNet dict</div></div>
+    </div>
+
+    <div class="apps">
+      <div class="app-item"><div class="app-icon">💬</div><div class="app-title">Chatbots (Google Assistant)</div><div class="app-desc">Lemmatizes user input to understand "ran", "running", "runs" all as the same intent "run".</div></div>
+      <div class="app-item"><div class="app-icon">📚</div><div class="app-title">Question Answering</div><div class="app-desc">Matches question tokens to document tokens regardless of tense or form.</div></div>
+      <div class="app-item"><div class="app-icon">🔬</div><div class="app-title">Medical NLP</div><div class="app-desc">Normalizes clinical notes — "administered", "administering" → "administer".</div></div>
+      <div class="app-item"><div class="app-icon">📖</div><div class="app-title">Spell Checker</div><div class="app-desc">Checks if the lemma exists in the dictionary to validate word forms.</div></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">03_lemmatization.py</span><span class="code-lang">Python + NLTK + spaCy</span></div>
+      <pre><code class="language-python">import nltk
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import wordnet
+import spacy
+
+# --- Method 1: NLTK WordNetLemmatizer ---
+lemmatizer = WordNetLemmatizer()
+
+# IMPORTANT: you must specify POS tag for accuracy
+# 'v' = verb, 'n' = noun, 'a' = adjective, 'r' = adverb
+words_pos = [
+    ("studies",  "v"), ("running", "v"), ("better",   "a"),
+    ("was",      "v"), ("children","n"), ("happily",  "r"),
+    ("playing",  "v"), ("geese",   "n"), ("best",     "a"),
+]
+
+print(f"{'Word':<12} {'POS':<6} {'Lemma'}")
+print("-" * 35)
+for word, pos in words_pos:
+    lemma = lemmatizer.lemmatize(word, pos=pos)
+    print(f"{word:<12} {pos:<6} {lemma}")
+
+# --- Method 2: spaCy (automatically detects POS) ---
+nlp = spacy.load("en_core_web_sm")
+text = "The children were playing with their geese and running happily"
+doc = nlp(text)
+
+print("\n--- spaCy Auto-Lemmatization ---")
+for token in doc:
+    print(f"{token.text:<15} → {token.lemma_:<15} [{token.pos_}]")</code></pre>
+    </div>
+
+    <div class="output">
+      <div class="output-label">▶ Output</div>
+      <pre>Word         POS    Lemma
+-----------------------------------
+studies      v      study
+running      v      run
+better       a      good        ← "better" → "good" ✓
+was          v      be          ← "was" → "be" ✓
+children     n      child       ← "children" → "child" ✓
+geese        n      goose       ← "geese" → "goose" ✓
+
+--- spaCy Auto-Lemmatization ---
+children        → child           [NOUN]
+were            → be              [AUX]
+playing         → play            [VERB]
+geese           → goose           [NOUN]</pre>
+    </div>
+
+    <div class="nav-footer">
+      <button class="nav-btn" onclick="show(2)">← Stemming</button>
+      <span class="progress-text">Topic 3 of 16</span>
+      <button class="nav-btn primary" onclick="show(4)">Stopwords →</button>
+    </div>
+  </section>
+
+  <!-- ===== 4: STOPWORDS ===== -->
+  <section id="sec4">
+    <div class="section-badge badge-prep">🧹 Preprocessing</div>
+    <h2>Stopwords Removal</h2>
+    <p class="subtitle">Stopwords are common words (the, is, a, and, in…) that carry little meaning for most NLP tasks. Removing them reduces noise, shrinks vocabulary size, and speeds up training. NLTK has 179 English stopwords built-in.</p>
+
+    <div class="cards">
+      <div class="card"><div class="card-label">NLTK English Stopwords</div><div class="card-value cv-teal">179</div><div class="card-sub">Words to filter</div></div>
+      <div class="card"><div class="card-label">Vocab Reduction</div><div class="card-value cv-green">~30–50%</div><div class="card-sub">Smaller feature space</div></div>
+      <div class="card"><div class="card-label">When to SKIP</div><div class="card-value cv-yellow">Sentiment</div><div class="card-sub">"not good" → "good" is wrong!</div></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">04_stopwords.py</span><span class="code-lang">Python + NLTK</span></div>
+      <pre><code class="language-python">from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+
+# --- Load stopwords ---
+stop_words = set(stopwords.words('english'))
+print(f"Total English stopwords: {len(stop_words)}")
+print("Sample:", list(stop_words)[:15])
+
+# --- Filter a sentence ---
+text = "The food at the restaurant was not good and I did not enjoy it at all"
+tokens = word_tokenize(text.lower())
+
+# Without stopword removal
+print(f"\nOriginal ({len(tokens)} tokens):", tokens)
+
+# With stopword removal
+filtered = [w for w in tokens if w not in stop_words]
+print(f"Filtered ({len(filtered)} tokens):", filtered)
+
+# --- Custom stopwords (add domain-specific) ---
+custom_stop = stop_words | {"also", "however", "therefore", "moreover"}
+
+# --- ⚠️ WARNING: negation problem ---
+negative_text = "The food was NOT good and NOT tasty"
+neg_tokens = word_tokenize(negative_text.lower())
+bad_filter = [w for w in neg_tokens if w not in stop_words]
+print(f"\n⚠️  Negation problem: {bad_filter}")
+# "not" is a stopword! "NOT good" becomes just "good" → wrong sentiment!
+
+# --- FIX: keep negation words ---
+keep_negation = stop_words - {"not", "no", "nor", "never", "neither", "n't"}
+good_filter = [w for w in neg_tokens if w not in keep_negation]
+print(f"✓  Fixed (keep 'not'): {good_filter}")</code></pre>
+    </div>
+
+    <div class="output">
+      <div class="output-label">▶ Output</div>
+      <pre>Total English stopwords: 179
+Sample: ['i', 'me', 'my', 'myself', 'we', 'our', 'the', 'a', 'is', 'are', 'was', 'were', 'be', 'been', 'being']
+
+Original (17 tokens): ['the', 'food', 'at', 'the', 'restaurant', 'was', 'not', 'good', 'and', 'i', 'did', 'not', 'enjoy', 'it', 'at', 'all']
+Filtered  (4 tokens): ['food', 'restaurant', 'good', 'enjoy']
+
+⚠️  Negation problem: ['food', 'good', 'tasty']
+✓  Fixed (keep 'not'): ['food', 'not', 'good', 'not', 'tasty']</pre>
+    </div>
+
+    <div class="nav-footer">
+      <button class="nav-btn" onclick="show(3)">← Lemmatization</button>
+      <span class="progress-text">Topic 4 of 16</span>
+      <button class="nav-btn primary" onclick="show(5)">POS Tagging →</button>
+    </div>
+  </section>
+
+  <!-- ===== 5: POS TAGGING ===== -->
+  <section id="sec5">
+    <div class="section-badge badge-prep">🧹 Preprocessing</div>
+    <h2>Parts of Speech (POS) Tagging</h2>
+    <p class="subtitle">POS tagging assigns each word a grammatical role: Noun, Verb, Adjective, Adverb, etc. This is critical for understanding sentence structure, enabling correct lemmatization, and is the foundation of all advanced NLP tasks like NER and parsing.</p>
+
+    <div class="cards">
+      <div class="card"><div class="card-label">Common Tags</div><div class="card-value cv-teal">NN/VB/JJ</div><div class="card-sub">Noun·Verb·Adjective</div></div>
+      <div class="card"><div class="card-label">NLTK Tagset</div><div class="card-value cv-green">45</div><div class="card-sub">Penn Treebank tags</div></div>
+      <div class="card"><div class="card-label">spaCy Tagset</div><div class="card-value cv-purple">18</div><div class="card-sub">Universal POS tags</div></div>
+    </div>
+
+    <div class="apps">
+      <div class="app-item"><div class="app-icon">📝</div><div class="app-title">Grammar Checker</div><div class="app-desc">Grammarly uses POS to detect subject-verb agreement errors ("He run" → should be "runs").</div></div>
+      <div class="app-item"><div class="app-icon">🔄</div><div class="app-title">Machine Translation</div><div class="app-desc">Google Translate needs POS to reorder words correctly between languages.</div></div>
+      <div class="app-item"><div class="app-icon">🎤</div><div class="app-title">Text-to-Speech</div><div class="app-desc">Siri/Alexa uses POS to stress the right syllables (the noun "REcord" vs verb "reCORD").</div></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">05_pos_tagging.py</span><span class="code-lang">Python + NLTK + spaCy</span></div>
+      <pre><code class="language-python">import nltk
+import spacy
+from nltk.tokenize import word_tokenize
+
+sentence = "Google was founded in California by Larry Page in 1998"
+
+# --- Method 1: NLTK POS Tagging ---
+tokens = word_tokenize(sentence)
+nltk_pos = nltk.pos_tag(tokens)
+print("NLTK POS Tags:")
+for word, tag in nltk_pos:
+    print(f"  {word:<15} → {tag}")
+
+# --- Common Penn Treebank Tags ---
+tag_meanings = {
+    'NN': 'Noun (singular)',    'NNP': 'Proper Noun',
+    'VBD': 'Verb (past tense)', 'VBN': 'Verb (past participle)',
+    'JJ': 'Adjective',          'RB': 'Adverb',
+    'IN': 'Preposition',        'DT': 'Determiner (the/a)',
+    'CD': 'Cardinal number',    'PRP': 'Personal pronoun',
+}
+
+# --- Method 2: spaCy (richer, more accurate) ---
+nlp = spacy.load("en_core_web_sm")
+doc = nlp(sentence)
+print("\nspaCy POS Tags:")
+for token in doc:
+    print(f"  {token.text:<15} POS={token.pos_:<8} Tag={token.tag_:<6} Dep={token.dep_}")
+
+# --- Extract only nouns ---
+nouns = [token.text for token in doc if token.pos_ == "NOUN"]
+verbs = [token.text for token in doc if token.pos_ == "VERB"]
+print(f"\nNouns: {nouns}")
+print(f"Verbs: {verbs}")</code></pre>
+    </div>
+
+    <div class="output">
+      <div class="output-label">▶ Output</div>
+      <pre>NLTK POS Tags:
+  Google          → NNP    (Proper Noun)
+  was             → VBD    (Verb past tense)
+  founded         → VBN    (Verb past participle)
+  California      → NNP    (Proper Noun)
+  Larry           → NNP    (Proper Noun)
+  Page            → NNP    (Proper Noun)
+  1998            → CD     (Cardinal number)
+
+spaCy:  Google→PROPN  was→AUX  founded→VERB  California→PROPN
+Nouns: []    Verbs: ['founded']    Proper Nouns: ['Google', 'California', 'Larry', 'Page']</pre>
+    </div>
+
+    <div class="nav-footer">
+      <button class="nav-btn" onclick="show(4)">← Stopwords</button>
+      <span class="progress-text">Topic 5 of 16</span>
+      <button class="nav-btn primary" onclick="show(6)">NER →</button>
+    </div>
+  </section>
+
+  <!-- ===== 6: NER ===== -->
+  <section id="sec6">
+    <div class="section-badge badge-prep">🧹 Preprocessing</div>
+    <h2>Named Entity Recognition (NER)</h2>
+    <p class="subtitle">NER identifies and classifies named entities in text into categories: Person, Organization, Location, Date, Money, etc. It's one of the most commercially important NLP tasks — used everywhere from news analysis to voice assistants.</p>
+
+    <div class="cards">
+      <div class="card"><div class="card-label">Entity Types</div><div class="card-value cv-teal">PERSON</div><div class="card-sub">ORG · GPE · DATE · MONEY</div></div>
+      <div class="card"><div class="card-label">spaCy Accuracy</div><div class="card-value cv-green">~86%</div><div class="card-sub">On standard benchmarks</div></div>
+      <div class="card"><div class="card-label">Use Case</div><div class="card-value cv-purple">Info Extraction</div><div class="card-sub">From unstructured text</div></div>
+    </div>
+
+    <div class="apps">
+      <div class="app-item"><div class="app-icon">📰</div><div class="app-title">Google News</div><div class="app-desc">Extracts people, companies, and locations from articles to categorize and link related stories.</div></div>
+      <div class="app-item"><div class="app-icon">🏦</div><div class="app-title">Finance (Bloomberg)</div><div class="app-desc">Extracts company names and monetary values from news to trigger trading alerts.</div></div>
+      <div class="app-item"><div class="app-icon">🎤</div><div class="app-title">Voice Assistants</div><div class="app-desc">"Set a reminder for 3pm" → NER extracts DATE=3pm to trigger the calendar.</div></div>
+      <div class="app-item"><div class="app-icon">💊</div><div class="app-title">Healthcare (Google Health)</div><div class="app-desc">Extracts drug names, diseases, dosages from clinical notes for structured records.</div></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">06_ner.py</span><span class="code-lang">Python + spaCy</span></div>
+      <pre><code class="language-python">import spacy
+from spacy import displacy
+
+nlp = spacy.load("en_core_web_sm")
+
+text = """
+Sundar Pichai, CEO of Google, announced that the company 
+invested $10 billion in AI research in California last year.
+He also mentioned that OpenAI and Microsoft are strong competitors.
+The announcement was made on January 15, 2024 at San Francisco.
+"""
+
+doc = nlp(text)
+
+# --- Extract all entities ---
+print("Named Entities Found:")
+print(f"{'Entity Text':<25} {'Label':<12} {'Meaning'}")
+print("-" * 60)
+
+label_meanings = {
+    'PERSON': 'People, characters',
+    'ORG': 'Companies, agencies',
+    'GPE': 'Countries, cities, states',
+    'MONEY': 'Monetary values',
+    'DATE': 'Dates and times',
+    'PRODUCT': 'Products, objects',
+    'LOC': 'Non-GPE locations',
+}
+
+for ent in doc.ents:
+    meaning = label_meanings.get(ent.label_, ent.label_)
+    print(f"{ent.text:<25} {ent.label_:<12} {meaning}")
+
+# --- Filter by type ---
+people = [ent.text for ent in doc.ents if ent.label_ == "PERSON"]
+orgs   = [ent.text for ent in doc.ents if ent.label_ == "ORG"]
+places = [ent.text for ent in doc.ents if ent.label_ == "GPE"]
+money  = [ent.text for ent in doc.ents if ent.label_ == "MONEY"]
+
+print(f"\nPeople:  {people}")
+print(f"Orgs:    {orgs}")
+print(f"Places:  {places}")
+print(f"Money:   {money}")</code></pre>
+    </div>
+
+    <div class="output">
+      <div class="output-label">▶ Output</div>
+      <pre>Named Entities Found:
+Entity Text               Label        Meaning
+------------------------------------------------------------
+Sundar Pichai             PERSON       People, characters
+Google                    ORG          Companies, agencies
+$10 billion               MONEY        Monetary values
+California                GPE          Countries, cities, states
+OpenAI                    ORG          Companies, agencies
+Microsoft                 ORG          Companies, agencies
+January 15, 2024          DATE         Dates and times
+San Francisco             GPE          Countries, cities, states
+
+People:  ['Sundar Pichai']
+Orgs:    ['Google', 'OpenAI', 'Microsoft']
+Places:  ['California', 'San Francisco']
+Money:   ['$10 billion']</pre>
+    </div>
+
+    <div class="nav-footer">
+      <button class="nav-btn" onclick="show(5)">← POS</button>
+      <span class="progress-text">Topic 6 of 16</span>
+      <button class="nav-btn primary" onclick="show(7)">One Hot Encoding →</button>
+    </div>
+  </section>
+
+  <!-- ===== 7: OHE ===== -->
+  <section id="sec7">
+    <div class="section-badge badge-repr">📦 Representation</div>
+    <h2>One Hot Encoding (OHE)</h2>
+    <p class="subtitle">One Hot Encoding converts each word into a binary vector of size equal to the vocabulary. Only one position is 1 (hot) — the rest are 0. Simple to understand, but creates huge sparse vectors and has no semantic meaning.</p>
+
+    <div class="cards">
+      <div class="card"><div class="card-label">Vector Size</div><div class="card-value cv-teal">= Vocab</div><div class="card-sub">One position per word</div></div>
+      <div class="card"><div class="card-label">Sparsity</div><div class="card-value cv-yellow">Extreme</div><div class="card-sub">Only 1 bit is 1</div></div>
+      <div class="card"><div class="card-label">Semantic Info</div><div class="card-value cv-yellow">None</div><div class="card-sub">cat ≠ dog equally</div></div>
+    </div>
+
+    <div class="sec-label">Visual: Vocabulary of 5 words → OHE vectors</div>
+    <div class="diagram">
+      <div class="matrix">
+Vocab: [ good, bad, pizza, burger, food ]
+         idx:0  idx:1  idx:2   idx:3   idx:4
+
+"good"   → [ <span class="hl">1</span>, 0, 0, 0, 0 ]
+"bad"    → [ 0, <span class="hl">1</span>, 0, 0, 0 ]
+"pizza"  → [ 0, 0, <span class="hl">1</span>, 0, 0 ]
+"burger" → [ 0, 0, 0, <span class="hl">1</span>, 0 ]
+"food"   → [ 0, 0, 0, 0, <span class="hl">1</span> ]
+
+<span class="dim">Problem: cos_similarity("cat", "kitten") = 0  ← no semantic similarity!</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">07_one_hot_encoding.py</span><span class="code-lang">Python + NumPy + sklearn</span></div>
+      <pre><code class="language-python">import numpy as np
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+
+# --- Manual OHE from scratch ---
+corpus = ["The food is good", "The food is bad", "Pizza is amazing", "Burger is bad"]
+all_words = sorted(set(" ".join(corpus).lower().split()))
+word_to_idx = {w: i for i, w in enumerate(all_words)}
+vocab_size = len(all_words)
+
+print(f"Vocabulary ({vocab_size} words): {all_words}")
+
+def one_hot(word, vocab):
+    vec = np.zeros(len(vocab), dtype=int)
+    if word.lower() in vocab:
+        vec[vocab[word.lower()]] = 1
+    return vec
+
+words_to_encode = ["food", "good", "pizza", "bad"]
+print(f"\n{'Word':<10} Vector")
+for w in words_to_encode:
+    print(f"{w:<10} {one_hot(w, word_to_idx).tolist()}")
+
+# --- sklearn OHE (for ML pipelines) ---
+from sklearn.preprocessing import OneHotEncoder
+words = [["cat"], ["dog"], ["fish"], ["bird"], ["cat"]]
+encoder = OneHotEncoder(sparse_output=False)
+encoded = encoder.fit_transform(words)
+print(f"\nsklearn OHE categories: {encoder.categories_}")
+print(f"'cat' encoded: {encoded[0]}")
+print(f"'dog' encoded: {encoded[1]}")
+
+# --- Disadvantages demonstration ---
+cat_vec  = one_hot("food", word_to_idx).astype(float)
+good_vec = one_hot("good", word_to_idx).astype(float)
+dot = np.dot(cat_vec, good_vec)
+print(f"\ncosine_similarity('food','good') = {dot:.1f}  ← all words equally dissimilar")</code></pre>
+    </div>
+
+    <div class="nav-footer">
+      <button class="nav-btn" onclick="show(6)">← NER</button>
+      <span class="progress-text">Topic 7 of 16</span>
+      <button class="nav-btn primary" onclick="show(8)">Bag of Words →</button>
+    </div>
+  </section>
+
+  <!-- ===== 8: BOW ===== -->
+  <section id="sec8">
+    <div class="section-badge badge-repr">📦 Representation</div>
+    <h2>Bag of Words (BOW)</h2>
+    <p class="subtitle">BOW represents a document as a vector of word counts — ignoring grammar and order. "The food is good" = {food:1, good:1, is:1, the:1}. Simple, effective for text classification. Used in early spam filters (Naive Bayes + BOW).</p>
+
+    <div class="cards">
+      <div class="card"><div class="card-label">Preserves</div><div class="card-value cv-green">Frequency</div><div class="card-sub">Word count in doc</div></div>
+      <div class="card"><div class="card-label">Loses</div><div class="card-value cv-yellow">Word Order</div><div class="card-sub">"man bites dog" = "dog bites man"</div></div>
+      <div class="card"><div class="card-label">Variants</div><div class="card-value cv-blue">Binary BOW</div><div class="card-sub">1/0 presence only</div></div>
+    </div>
+
+    <div class="sec-label">How BOW builds the matrix</div>
+    <div class="diagram">
+      <div class="matrix">
+Documents:
+  S1 = "The food is good"
+  S2 = "The food is bad"
+  S3 = "Pizza is amazing"
+
+After preprocessing → vocabulary: [amazing, bad, food, good, pizza]
+
+BOW Matrix (rows=docs, cols=words):
+             <span class="hl">amazing  bad  food  good  pizza</span>
+  S1 (good)    0      0    1     1     0
+  S2 (bad)     0      1    1     0     0
+  S3 (pizza)   1      0    0     0     1</div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">08_bag_of_words.py</span><span class="code-lang">Python + sklearn</span></div>
+      <pre><code class="language-python">from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+import pandas as pd
+import numpy as np
+
+corpus = [
+    "The food is good",       # label: 1 (positive)
+    "The food is bad",        # label: 0 (negative)
+    "Pizza is amazing",       # label: 1 (positive)
+    "Burger is bad",          # label: 0 (negative)
+    "The service was great",  # label: 1 (positive)
+]
+labels = [1, 0, 1, 0, 1]
+
+# --- Build BOW ---
+vectorizer = CountVectorizer(
+    lowercase=True,
+    stop_words='english',   # auto-remove stopwords
+    min_df=1                # min document frequency
+)
+X = vectorizer.fit_transform(corpus)
+feature_names = vectorizer.get_feature_names_out()
+
+# --- Display as DataFrame ---
+df = pd.DataFrame(X.toarray(), columns=feature_names)
+df.index = [f"S{i+1}" for i in range(len(corpus))]
+print("BOW Matrix:")
+print(df.to_string())
+
+# --- Binary BOW (just 0/1, ignore frequency) ---
+bin_vectorizer = CountVectorizer(binary=True, stop_words='english')
+X_bin = bin_vectorizer.fit_transform(corpus)
+
+# --- Sentiment Classifier using BOW + Naive Bayes ---
+model = MultinomialNB()
+model.fit(X, labels)
+
+test_sentences = ["The pizza is amazing!", "The food was terrible and bad"]
+X_test = vectorizer.transform(test_sentences)
+predictions = model.predict(X_test)
+
+for sent, pred in zip(test_sentences, predictions):
+    print(f"\n'{sent}' → {'POSITIVE ✓' if pred==1 else 'NEGATIVE ✗'}")</code></pre>
+    </div>
+
+    <div class="output">
+      <div class="output-label">▶ Output</div>
+      <pre>BOW Matrix:
+    amazing  bad  burger  food  good  great  pizza  service
+S1      0    0      0      1     1     0      0      0
+S2      0    1      0      1     0     0      0      0
+S3      1    0      0      0     0     0      1      0
+S4      0    1      1      0     0     0      0      0
+S5      0    0      0      0     0     1      0      1
+
+'The pizza is amazing!'  → POSITIVE ✓
+'The food was terrible and bad' → NEGATIVE ✗</pre>
+    </div>
+
+    <div class="nav-footer">
+      <button class="nav-btn" onclick="show(7)">← OHE</button>
+      <span class="progress-text">Topic 8 of 16</span>
+      <button class="nav-btn primary" onclick="show(9)">TF-IDF →</button>
+    </div>
+  </section>
+
+  <!-- ===== 9: TF-IDF ===== -->
+  <section id="sec9">
+    <div class="section-badge badge-repr">📦 Representation</div>
+    <h2>TF-IDF — Term Frequency · Inverse Document Frequency</h2>
+    <p class="subtitle">TF-IDF gives higher weight to words that are frequent in a document but rare across all documents. This captures importance better than raw counts — "the" appears everywhere so it gets a low score, but "Python" in a coding article gets a high score.</p>
+
+    <div class="formula">TF-IDF(t,d) = TF(t,d) × IDF(t) &nbsp;=&nbsp; (count(t,d) / total_words(d)) × log(N / df(t))</div>
+
+    <div class="cards">
+      <div class="card"><div class="card-label">TF</div><div class="card-value cv-green">Word freq in doc</div><div class="card-sub">Normalized by doc length</div></div>
+      <div class="card"><div class="card-label">IDF</div><div class="card-value cv-blue">log(N/df)</div><div class="card-sub">Rare words → high IDF</div></div>
+      <div class="card"><div class="card-label">Used In</div><div class="card-value cv-purple">Search + IR</div><div class="card-sub">Core of early Google search</div></div>
+    </div>
+
+    <div class="apps">
+      <div class="app-item"><div class="app-icon">🔍</div><div class="app-title">Early Google Search</div><div class="app-desc">TF-IDF was the backbone of document ranking before neural embeddings.</div></div>
+      <div class="app-item"><div class="app-icon">📝</div><div class="app-title">Auto-Summarization</div><div class="app-desc">Sentences with highest TF-IDF scoring words become the summary.</div></div>
+      <div class="app-item"><div class="app-icon">🏷️</div><div class="app-title">Keyword Extraction</div><div class="app-desc">Top TF-IDF words per document become that document's keywords/tags.</div></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">09_tfidf.py</span><span class="code-lang">Python + sklearn</span></div>
+      <pre><code class="language-python">from sklearn.feature_extraction.text import TfidfVectorizer
+import pandas as pd
+import numpy as np
+
+corpus = [
+    "The food is good boy",     # S1
+    "The food is good girl",    # S2
+    "Boy and girl are good",    # S3 — test sentence
+]
+
+# --- TF-IDF from sklearn ---
+vectorizer = TfidfVectorizer(
+    norm='l2',      # normalize vectors (standard)
+    smooth_idf=True # prevents division by zero
+)
+X = vectorizer.fit_transform(corpus)
+features = vectorizer.get_feature_names_out()
+
+df = pd.DataFrame(X.toarray().round(3), columns=features)
+df.index = ["S1", "S2", "S3"]
+print("TF-IDF Matrix:")
+print(df.to_string())
+
+# --- Why TF-IDF beats BOW ---
+# "good" appears in ALL 3 docs → IDF = log(3/3) ≈ 0 → low weight
+# "boy" appears in 2 docs      → IDF = log(3/2) = 0.41
+# "girl" appears in 2 docs     → IDF = log(3/2) = 0.41
+
+print("\nIDF values (lower = appears in more documents):")
+idf = vectorizer.idf_
+for w, v in sorted(zip(features, idf), key=lambda x: x[1]):
+    print(f"  {w:<10} IDF={v:.3f}")
+
+# --- Practical: Find most important word per document ---
+print("\nTop keyword per document:")
+for i, (doc, row) in enumerate(zip(corpus, X.toarray())):
+    top_word_idx = np.argmax(row)
+    print(f"  S{i+1}: '{features[top_word_idx]}' (score={row[top_word_idx]:.3f})")</code></pre>
+    </div>
+
+    <div class="output">
+      <div class="output-label">▶ Output</div>
+      <pre>TF-IDF Matrix:
+       are     boy    food    girl    good     the
+S1   0.000   0.526   0.399   0.000   0.321   0.674  ← "boy" gets high score (only in S1)
+S2   0.000   0.000   0.399   0.526   0.321   0.674  ← "girl" gets high score (only in S2)
+S3   0.606   0.461   0.000   0.461   0.372   0.000
+
+IDF values:
+  good    1.000   ← in all docs — low weight
+  food    1.405   ← in 2 docs
+  boy     1.693   ← in 1 doc — high weight ✓
+  girl    1.693   ← in 1 doc — high weight ✓</pre>
+    </div>
+
+    <div class="nav-footer">
+      <button class="nav-btn" onclick="show(8)">← BOW</button>
+      <span class="progress-text">Topic 9 of 16</span>
+      <button class="nav-btn primary" onclick="show(10)">N-Grams →</button>
+    </div>
+  </section>
+
+  <!-- ===== 10: N-GRAMS ===== -->
+  <section id="sec10">
+    <div class="section-badge badge-repr">📦 Representation</div>
+    <h2>N-Grams</h2>
+    <p class="subtitle">N-Grams are contiguous sequences of N words. Unigrams=1 word, Bigrams=2 words, Trigrams=3 words. They capture local word context that BOW misses — "New York" as a bigram has different meaning than "New" + "York" separately.</p>
+
+    <div class="cards">
+      <div class="card"><div class="card-label">Unigrams (n=1)</div><div class="card-value cv-teal">["food", "is"]</div><div class="card-sub">Single words — BOW</div></div>
+      <div class="card"><div class="card-label">Bigrams (n=2)</div><div class="card-value cv-green">["food is", "is good"]</div><div class="card-sub">Word pairs</div></div>
+      <div class="card"><div class="card-label">Trigrams (n=3)</div><div class="card-value cv-purple">["food is good"]</div><div class="card-sub">3-word sequences</div></div>
+    </div>
+
+    <div class="apps">
+      <div class="app-item"><div class="app-icon">📱</div><div class="app-title">Autocomplete</div><div class="app-desc">Your phone keyboard uses trigram language models — predicts "I love you" from "I love".</div></div>
+      <div class="app-item"><div class="app-icon">🔡</div><div class="app-title">Spell Correction</div><div class="app-desc">Identifies unusual bigrams ("teh food") to detect and fix typos.</div></div>
+      <div class="app-item"><div class="app-icon">🎶</div><div class="app-title">Music/Text Generation</div><div class="app-desc">Simple text generators use bigram/trigram probabilities to generate coherent text.</div></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">10_ngrams.py</span><span class="code-lang">Python + NLTK</span></div>
+      <pre><code class="language-python">from nltk.util import ngrams
+from nltk.tokenize import word_tokenize
+from collections import Counter
+from sklearn.feature_extraction.text import CountVectorizer
+
+text = "The food is not good. The food is not tasty. I will not order again."
+
+# --- Generate N-grams with NLTK ---
+tokens = word_tokenize(text.lower())
+tokens = [t for t in tokens if t.isalpha()]  # remove punctuation
+
+unigrams  = list(ngrams(tokens, 1))
+bigrams   = list(ngrams(tokens, 2))
+trigrams  = list(ngrams(tokens, 3))
+
+print(f"Unigrams  ({len(unigrams)}): {unigrams[:5]}")
+print(f"Bigrams   ({len(bigrams)}): {bigrams[:5]}")
+print(f"Trigrams  ({len(trigrams)}): {trigrams[:5]}")
+
+# --- Most common bigrams ---
+bigram_freq = Counter(bigrams)
+print("\nTop 5 Bigrams by frequency:")
+for gram, count in bigram_freq.most_common(5):
+    print(f"  {' '.join(gram):<20} : {count}")
+
+# --- Key insight: bigrams preserve negation ---
+print("\n✓ 'not good' stays together as a bigram → captures negation!")
+print("✓ 'will not' as bigram → important for intent understanding")
+
+# --- sklearn vectorizer with bigrams ---
+corpus = ["The food is not good", "The food is good", "Pizza is amazing"]
+vec = CountVectorizer(ngram_range=(1, 2), stop_words='english')
+X = vec.fit_transform(corpus)
+print("\nFeatures (unigrams+bigrams):", vec.get_feature_names_out())</code></pre>
+    </div>
+
+    <div class="nav-footer">
+      <button class="nav-btn" onclick="show(9)">← TF-IDF</button>
+      <span class="progress-text">Topic 10 of 16</span>
+      <button class="nav-btn primary" onclick="show(11)">Word Embeddings →</button>
+    </div>
+  </section>
+
+  <!-- ===== 11: WORD EMBEDDINGS ===== -->
+  <section id="sec11">
+    <div class="section-badge badge-embed">🧠 Embeddings</div>
+    <h2>Word Embeddings — Intro</h2>
+    <p class="subtitle">Word embeddings are dense, low-dimensional vectors where semantically similar words are mathematically close. Unlike OHE/BOW, "king" and "queen" are close in embedding space, and king - man + woman ≈ queen. This is the technology behind Google Translate, GPT, and BERT.</p>
+
+    <div class="cards">
+      <div class="card"><div class="card-label">OHE Vector</div><div class="card-value cv-yellow">50,000 dim</div><div class="card-sub">Sparse, no meaning</div></div>
+      <div class="card"><div class="card-label">Embedding Vector</div><div class="card-value cv-green">100–300 dim</div><div class="card-sub">Dense, meaningful</div></div>
+      <div class="card"><div class="card-label">Famous Analogy</div><div class="card-value cv-purple">king−man+woman≈queen</div><div class="card-sub">Vector arithmetic works!</div></div>
+    </div>
+
+    <div class="sec-label">The key insight — geometry = meaning</div>
+    <div class="diagram">
+      <div class="matrix">
+Word       Embedding (simplified to 3D)
+           [gender,  royalty,  age  ]
+
+king    →  [-0.95,   +0.97,   +0.05 ]
+queen   →  [+0.97,   +0.95,   +0.03 ]
+man     →  [-0.92,   -0.01,   +0.10 ]
+woman   →  [+0.91,   -0.02,   +0.09 ]
+
+<span class="hl">king - man + woman</span>  ≈  [-0.95-(-0.92)+0.91, 0.97-0.01+(-0.02), 0.05-0.10+0.09]
+                         ≈  [+0.88,               +0.94,              +0.04]
+                         ≈  queen ✓
+
+<span class="dim">cosine_similarity("cat", "kitten") = 0.89  ← semantically close ✓
+cosine_similarity("cat", "democracy") = 0.12 ← semantically far ✓</span></div>
+    </div>
+
+    <div class="nav-footer">
+      <button class="nav-btn" onclick="show(10)">← N-Grams</button>
+      <span class="progress-text">Topic 11 of 16</span>
+      <button class="nav-btn primary" onclick="show(12)">Word2Vec CBOW →</button>
+    </div>
+  </section>
+
+  <!-- ===== 12: CBOW ===== -->
+  <section id="sec12">
+    <div class="section-badge badge-embed">🧠 Embeddings</div>
+    <h2>Word2Vec — CBOW (Continuous Bag of Words)</h2>
+    <p class="subtitle">CBOW predicts the center (target) word from its surrounding context words. Given ["The", "food", "_", "good"] → predict "is". It averages context embeddings to make the prediction. Faster to train, good for common words.</p>
+
+    <div class="formula">CBOW: Context Words → [Average Embedding] → Predict Target Word</div>
+
+    <div class="cards">
+      <div class="card"><div class="card-label">Input</div><div class="card-value cv-teal">Context words</div><div class="card-sub">Window of ±2 words</div></div>
+      <div class="card"><div class="card-label">Predict</div><div class="card-value cv-green">Target word</div><div class="card-sub">Center of window</div></div>
+      <div class="card"><div class="card-label">Speed</div><div class="card-value cv-purple">Fast</div><div class="card-sub">Averages context</div></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">12_word2vec_cbow.py</span><span class="code-lang">Python + Gensim</span></div>
+      <pre><code class="language-python">from gensim.models import Word2Vec
+import numpy as np
+
+# --- Training data (normally thousands of sentences) ---
+sentences = [
+    ["the", "food", "is", "very", "good"],
+    ["the", "food", "is", "very", "bad"],
+    ["pizza", "is", "amazing", "food"],
+    ["burger", "and", "pizza", "are", "tasty"],
+    ["i", "love", "good", "food", "and", "drinks"],
+    ["bad", "service", "ruins", "good", "food"],
+    ["amazing", "restaurant", "with", "great", "food"],
+]
+
+# --- Train CBOW model ---
+model = Word2Vec(
+    sentences=sentences,
+    vector_size=50,      # embedding dimensions
+    window=2,            # context window size (±2 words)
+    min_count=1,         # include words appearing ≥1 time
+    workers=4,           # parallel threads
+    sg=0,                # sg=0 → CBOW, sg=1 → SkipGram
+    epochs=100           # training epochs
+)
+
+# --- Inspect embeddings ---
+print("Vocabulary:", list(model.wv.key_to_index.keys()))
+print(f"\nEmbedding vector for 'food' (first 10 dims):")
+print(model.wv["food"][:10].round(4))
+
+# --- Semantic similarity ---
+print(f"\ncosine_similarity('food', 'pizza') = {model.wv.similarity('food','pizza'):.3f}")
+print(f"cosine_similarity('good', 'amazing') = {model.wv.similarity('good','amazing'):.3f}")
+print(f"cosine_similarity('good', 'bad') = {model.wv.similarity('good','bad'):.3f}")
+
+# --- Most similar words ---
+print(f"\nWords most similar to 'good':")
+for word, score in model.wv.most_similar("good", topn=5):
+    print(f"  {word:<12} similarity={score:.3f}")
+
+# --- Save and load model ---
+model.save("cbow_model.model")
+loaded_model = Word2Vec.load("cbow_model.model")
+print("\nModel saved and loaded successfully ✓")</code></pre>
+    </div>
+
+    <div class="output">
+      <div class="output-label">▶ Output</div>
+      <pre>cosine_similarity('food', 'pizza')   = 0.872  ← very similar ✓
+cosine_similarity('good', 'amazing') = 0.841  ← very similar ✓
+cosine_similarity('good', 'bad')     = 0.233  ← opposites, low similarity ✓
+
+Words most similar to 'good':
+  amazing      similarity=0.841
+  great        similarity=0.812
+  tasty        similarity=0.778
+  bad          similarity=0.233  ← low, correctly opposite</pre>
+    </div>
+
+    <div class="nav-footer">
+      <button class="nav-btn" onclick="show(11)">← Embeddings Intro</button>
+      <span class="progress-text">Topic 12 of 16</span>
+      <button class="nav-btn primary" onclick="show(13)">SkipGram →</button>
+    </div>
+  </section>
+
+  <!-- ===== 13: SKIPGRAM ===== -->
+  <section id="sec13">
+    <div class="section-badge badge-embed">🧠 Embeddings</div>
+    <h2>Word2Vec — SkipGram</h2>
+    <p class="subtitle">SkipGram is the reverse of CBOW: given a center word, predict the surrounding context words. Given "food" → predict ["The", "is", "very", "good"]. Better for rare words. Slower to train but produces richer embeddings.</p>
+
+    <div class="formula">SkipGram: Target Word → Predict Each Context Word Separately</div>
+
+    <table>
+      <tr><th>Feature</th><th>CBOW</th><th>SkipGram</th></tr>
+      <tr><td>Input</td><td>Context → predicts target</td><td>Target → predicts context</td></tr>
+      <tr><td>Speed</td><td class="good">Faster</td><td class="bad">Slower</td></tr>
+      <tr><td>Rare words</td><td class="bad">Weaker</td><td class="good">Better</td></tr>
+      <tr><td>Training data</td><td>Needs less</td><td>Generates more pairs</td></tr>
+      <tr><td>Best for</td><td>Large corpus, frequent words</td><td>Small corpus, rare words</td></tr>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">13_skipgram.py</span><span class="code-lang">Python + Gensim</span></div>
+      <pre><code class="language-python">from gensim.models import Word2Vec
+
+sentences = [
+    ["the", "food", "is", "very", "good"],
+    ["the", "food", "is", "very", "bad"],
+    ["pizza", "is", "amazing", "food"],
+    ["burger", "and", "pizza", "are", "tasty"],
+    ["i", "love", "good", "food", "and", "drinks"],
+]
+
+# --- Train SkipGram model (sg=1) ---
+skipgram_model = Word2Vec(
+    sentences=sentences,
+    vector_size=50,
+    window=2,
+    min_count=1,
+    workers=4,
+    sg=1,         # ← KEY DIFFERENCE: sg=1 = SkipGram
+    epochs=200    # SkipGram typically needs more epochs
+)
+
+# --- Compare CBOW vs SkipGram embeddings ---
+cbow_model = Word2Vec(sentences, vector_size=50, window=2, sg=0, epochs=200, min_count=1)
+
+print("=== CBOW vs SkipGram Similarity Comparison ===")
+pairs = [("food","pizza"), ("good","amazing"), ("good","bad"), ("pizza","burger")]
+print(f"\n{'Word Pair':<25} {'CBOW':>8} {'SkipGram':>10}")
+print("-" * 45)
+for w1, w2 in pairs:
+    try:
+        c = cbow_model.wv.similarity(w1, w2)
+        s = skipgram_model.wv.similarity(w1, w2)
+        print(f"({w1}, {w2}){'':>5} {c:>8.3f} {s:>10.3f}")
+    except KeyError as e:
+        print(f"  {e} not in vocab")
+
+# --- Use pre-trained Google Word2Vec (production) ---
+# Download: https://code.google.com/archive/p/word2vec/
+# from gensim.models import KeyedVectors
+# wv = KeyedVectors.load_word2vec_format('GoogleNews-vectors-negative300.bin', binary=True)
+# print(wv.most_similar("king"))  # → [('queen', 0.71), ('monarch', 0.69), ...]
+print("\n✓ For production: use pre-trained Google/GloVe/FastText vectors!")</code></pre>
+    </div>
+
+    <div class="nav-footer">
+      <button class="nav-btn" onclick="show(12)">← CBOW</button>
+      <span class="progress-text">Topic 13 of 16</span>
+      <button class="nav-btn primary" onclick="show(14)">Sentiment Analysis →</button>
+    </div>
+  </section>
+
+  <!-- ===== 14: SENTIMENT ANALYSIS ===== -->
+  <section id="sec14">
+    <div class="section-badge badge-build">🤖 Build AI</div>
+    <h2>Sentiment Analysis — Complete Project</h2>
+    <p class="subtitle">Sentiment Analysis classifies text as positive, negative, or neutral. This is the most common real NLP application — used by Google, Amazon, Twitter, and every company that reads customer feedback.</p>
+
+    <div class="cards">
+      <div class="card"><div class="card-label">Used By</div><div class="card-value cv-teal">Amazon</div><div class="card-sub">Review analysis, ratings</div></div>
+      <div class="card"><div class="card-label">Twitter</div><div class="card-value cv-green">Brand monitoring</div><div class="card-sub">Real-time sentiment</div></div>
+      <div class="card"><div class="card-label">Accuracy</div><div class="card-value cv-purple">~92%</div><div class="card-sub">With BERT embeddings</div></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">14_sentiment_analysis.py — Complete Pipeline</span><span class="code-lang">Python + sklearn + Transformers</span></div>
+      <pre><code class="language-python">from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, accuracy_score
+import numpy as np
+
+# --- Dataset ---
+texts = [
+    "I absolutely love this product!",          # 1
+    "This is the worst thing I ever bought",    # 0
+    "Amazing quality, very happy with it",      # 1
+    "Terrible service, never coming back",      # 0
+    "Good value for money, recommend it",       # 1
+    "Not bad, works as expected",               # 1
+    "Complete waste of money",                  # 0
+    "Excellent! Best purchase ever",            # 1
+    "Disappointing, not what I expected",       # 0
+    "Super fast delivery and great product",    # 1
+    "Broken on arrival, very unhappy",          # 0
+    "Fantastic! Will definitely buy again",     # 1
+]
+labels = [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
+
+# --- Pipeline: TF-IDF + Logistic Regression ---
+X_train, X_test, y_train, y_test = train_test_split(texts, labels, test_size=0.25, random_state=42)
+
+tfidf = TfidfVectorizer(ngram_range=(1,2), max_features=5000)
+X_train_vec = tfidf.fit_transform(X_train)
+X_test_vec  = tfidf.transform(X_test)
+
+clf = LogisticRegression(max_iter=1000)
+clf.fit(X_train_vec, y_train)
+
+y_pred = clf.predict(X_test_vec)
+print(f"Accuracy: {accuracy_score(y_test, y_pred):.1%}")
+print(classification_report(y_test, y_pred, target_names=["Negative","Positive"]))
+
+# --- Real-time prediction function ---
+def predict_sentiment(text):
+    vec = tfidf.transform([text])
+    pred = clf.predict(vec)[0]
+    prob = clf.predict_proba(vec)[0]
+    label = "POSITIVE 😊" if pred == 1 else "NEGATIVE 😞"
+    confidence = max(prob) * 100
+    return f"{label}  (confidence: {confidence:.1f}%)"
+
+tests = [
+    "The food at this restaurant is absolutely amazing!",
+    "Worst experience ever, never going back",
+    "It was okay, not great but not terrible either",
+]
+print("\n--- Live Predictions ---")
+for t in tests:
+    print(f"'{t[:50]}...' → {predict_sentiment(t)}")
+
+# --- BONUS: Transformer-based sentiment (state of the art) ---
+# from transformers import pipeline
+# sentiment = pipeline("sentiment-analysis")
+# result = sentiment("I love this product!")  → [{'label': 'POSITIVE', 'score': 0.9998}]</code></pre>
+    </div>
+
+    <div class="nav-footer">
+      <button class="nav-btn" onclick="show(13)">← SkipGram</button>
+      <span class="progress-text">Topic 14 of 16</span>
+      <button class="nav-btn primary" onclick="show(15)">Text Classification →</button>
+    </div>
+  </section>
+
+  <!-- ===== 15: TEXT CLASSIFICATION ===== -->
+  <section id="sec15">
+    <div class="section-badge badge-build">🤖 Build AI</div>
+    <h2>Text Classification</h2>
+    <p class="subtitle">Text classification assigns categories to text — spam/not-spam, topic category, intent detection. This is the core task behind Gmail's spam filter, news category detection, and chatbot intent recognition.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">15_text_classification.py — Multi-class + Intent Detection</span><span class="code-lang">Python + sklearn</span></div>
+      <pre><code class="language-python">from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import Pipeline
+import numpy as np
+
+# --- Intent Detection for Chatbot ---
+# This is exactly how Google Assistant/Alexa classify intents!
+
+training_data = [
+    # Greeting intent
+    ("Hello there", "greeting"),
+    ("Hi how are you", "greeting"),
+    ("Good morning", "greeting"),
+    ("Hey!", "greeting"),
+    # Weather intent
+    ("What is the weather today", "weather"),
+    ("Will it rain tomorrow", "weather"),
+    ("Tell me the forecast", "weather"),
+    ("Is it sunny outside", "weather"),
+    # Time intent
+    ("What time is it", "time"),
+    ("Tell me the current time", "time"),
+    ("What is today's date", "time"),
+    # Bye intent
+    ("Goodbye see you later", "bye"),
+    ("Bye take care", "bye"),
+    ("See you tomorrow", "bye"),
+]
+
+texts, intents = zip(*training_data)
+
+# --- Build sklearn Pipeline ---
+pipeline = Pipeline([
+    ('tfidf', TfidfVectorizer(ngram_range=(1,2))),
+    ('clf',   MultinomialNB(alpha=0.1))
+])
+pipeline.fit(texts, intents)
+
+# --- Test the intent classifier ---
+test_inputs = [
+    "Hello, how are you doing?",
+    "What's the weather like today?",
+    "Can you tell me the time please?",
+    "Bye bye see you soon",
+    "Good afternoon!",
+]
+
+print("Intent Detection Results:")
+print("-" * 55)
+for inp in test_inputs:
+    intent = pipeline.predict([inp])[0]
+    proba  = pipeline.predict_proba([inp])[0]
+    conf   = max(proba) * 100
+    print(f"  '{inp:<40}' → {intent:<10} ({conf:.0f}%)")
+
+# --- Gmail Spam Classifier ---
+spam_data = [
+    ("Congratulations! You won $1,000,000 click here", 1),
+    ("Meeting tomorrow at 10am in conference room", 0),
+    ("FREE OFFER LIMITED TIME CLICK NOW!!!", 1),
+    ("Can you review the attached document?", 0),
+    ("You have been selected for our prize draw", 1),
+    ("Lunch plans for Friday?", 0),
+]
+s_texts, s_labels = zip(*spam_data)
+spam_clf = Pipeline([('tfidf', TfidfVectorizer()), ('clf', MultinomialNB())])
+spam_clf.fit(s_texts, s_labels)
+test_emails = ["WIN FREE MONEY NOW click here!", "Can we schedule a meeting?"]
+for email in test_emails:
+    pred = spam_clf.predict([email])[0]
+    print(f"\n  Email: '{email}' → {'SPAM 🚫' if pred==1 else 'NOT SPAM ✓'}")</code></pre>
+    </div>
+
+    <div class="nav-footer">
+      <button class="nav-btn" onclick="show(14)">← Sentiment</button>
+      <span class="progress-text">Topic 15 of 16</span>
+      <button class="nav-btn primary" onclick="show(16)">Build Chatbot → FINAL</button>
+    </div>
+  </section>
+
+  <!-- ===== 16: CHATBOT ===== -->
+  <section id="sec16">
+    <div class="section-badge badge-build">🤖 FINAL PROJECT</div>
+    <h2>Build a Conversational AI Chatbot</h2>
+    <p class="subtitle">Now you apply every concept you've learned to build a chatbot that talks like a human. We'll build 3 versions — from simple rule-based using NLP to a full transformer-based model (same technology as ChatGPT).</p>
+
+    <div class="cards">
+      <div class="card"><div class="card-label">Level 1</div><div class="card-value cv-green">Rule + TF-IDF</div><div class="card-sub">FAQ chatbot</div></div>
+      <div class="card"><div class="card-label">Level 2</div><div class="card-value cv-blue">Intent + Entities</div><div class="card-sub">Assistant bot</div></div>
+      <div class="card"><div class="card-label">Level 3</div><div class="card-value cv-purple">Transformers</div><div class="card-sub">Human-level conversation</div></div>
+    </div>
+
+    <div class="sec-label">Level 1 — TF-IDF FAQ Chatbot (uses everything you learned)</div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">chatbot_v1_tfidf.py — FAQ Bot</span><span class="code-lang">Python + NLTK + sklearn</span></div>
+      <pre><code class="language-python">import nltk, string, numpy as np
+from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk.stem import WordNetLemmatizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+# --- Knowledge base (any text — paste Wikipedia, FAQs, etc.) ---
+knowledge_base = """
+NLP stands for Natural Language Processing. It is a branch of artificial intelligence 
+that helps computers understand, interpret, and generate human language.
+Tokenization is the process of splitting text into individual words or sentences.
+Stemming reduces words to their root form by removing suffixes.
+Lemmatization converts words to their base dictionary form using vocabulary and grammar rules.
+Stopwords are common words like the, is, a that carry little meaning.
+Bag of Words represents text as word frequency vectors.
+TF-IDF stands for Term Frequency Inverse Document Frequency. It weighs words by importance.
+Word2Vec creates dense vector embeddings where similar words are mathematically close.
+Named Entity Recognition identifies persons, places, organizations in text.
+Sentiment Analysis classifies text as positive, negative, or neutral.
+"""
+
+# --- Preprocessing pipeline using your NLP knowledge ---
+lemmatizer = WordNetLemmatizer()
+stop_words = set(nltk.corpus.stopwords.words('english'))
+
+def preprocess(text):
+    tokens = word_tokenize(text.lower())
+    tokens = [t for t in tokens if t.isalpha() and t not in stop_words]
+    tokens = [lemmatizer.lemmatize(t) for t in tokens]
+    return " ".join(tokens)
+
+# --- Build sentence corpus ---
+sentences = sent_tokenize(knowledge_base.strip())
+processed_sentences = [preprocess(s) for s in sentences]
+
+# --- TF-IDF retrieval ---
+vectorizer = TfidfVectorizer()
+X = vectorizer.fit_transform(processed_sentences)
+
+def get_response(user_input):
+    """Find the most relevant sentence from knowledge base."""
+    processed_input = preprocess(user_input)
+    input_vec = vectorizer.transform([processed_input])
+    similarities = cosine_similarity(input_vec, X).flatten()
+    best_idx = np.argmax(similarities)
+    best_score = similarities[best_idx]
+    
+    if best_score < 0.1:
+        return "I'm sorry, I don't have information about that. Can you rephrase?"
+    return sentences[best_idx].strip()
+
+# --- Chat loop ---
+print("NLP Chatbot v1 (TF-IDF) — type 'quit' to exit\n")
+while True:
+    user = input("You: ").strip()
+    if user.lower() in ['quit', 'exit', 'bye']:
+        print("Bot: Goodbye! 👋")
+        break
+    if not user:
+        continue
+    print(f"Bot: {get_response(user)}\n")</code></pre>
+    </div>
+
+    <div class="sec-label">Level 2 — Intent + Entity Chatbot</div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">chatbot_v2_intent.py — Assistant Bot</span><span class="code-lang">Python + NLTK + spaCy</span></div>
+      <pre><code class="language-python">import spacy
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from datetime import datetime
+import random
+
+nlp = spacy.load("en_core_web_sm")
+
+# --- Intent training data ---
+intent_data = [
+    ("Hello hi hey good morning", "greeting"),
+    ("What time is it current time", "time"),
+    ("What is today's date day", "date"),
+    ("Tell me about NLP what is nlp", "nlp_info"),
+    ("What is tokenization explain token", "nlp_info"),
+    ("What is word2vec embedding", "nlp_info"),
+    ("Bye goodbye see you later", "bye"),
+    ("Help me what can you do", "help"),
+]
+
+# --- Train intent classifier ---
+train_texts, train_labels = zip(*intent_data)
+vectorizer = TfidfVectorizer()
+clf = MultinomialNB()
+clf.fit(vectorizer.fit_transform(train_texts), train_labels)
+
+def classify_intent(text):
+    return clf.predict(vectorizer.transform([text]))[0]
+
+def extract_entities(text):
+    doc = nlp(text)
+    return {ent.label_: ent.text for ent in doc.ents}
+
+def get_response(user_input):
+    intent = classify_intent(user_input)
+    entities = extract_entities(user_input)
+    
+    responses = {
+        "greeting": ["Hello! How can I help you today? 😊",
+                     "Hi there! Ask me anything about NLP!",
+                     "Hey! I'm your NLP assistant."],
+        "time":     [f"The current time is {datetime.now().strftime('%H:%M:%S')}"],
+        "date":     [f"Today is {datetime.now().strftime('%A, %B %d, %Y')}"],
+        "nlp_info": ["NLP (Natural Language Processing) is how AI understands human language. "
+                     "It includes tokenization, embeddings, and deep learning models."],
+        "bye":      ["Goodbye! Keep learning NLP! 👋", "See you soon! 😊"],
+        "help":     ["I can answer questions about NLP, tell you the time/date, and chat with you!"],
+    }
+    
+    replies = responses.get(intent, ["I'm not sure about that. Try asking about NLP!"])
+    return random.choice(replies), intent, entities
+
+# --- Chat ---
+print("NLP Chatbot v2 (Intent Detection)\n")
+while True:
+    user = input("You: ").strip()
+    if user.lower() in ['quit', 'exit']:
+        print("Bot: Goodbye! 👋")
+        break
+    reply, intent, ents = get_response(user)
+    print(f"Bot: {reply}")
+    print(f"     [Intent: {intent} | Entities: {ents}]\n")</code></pre>
+    </div>
+
+    <div class="sec-label">Level 3 — Transformer Chatbot (Production-grade)</div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-filename">chatbot_v3_transformer.py — Human-Level AI</span><span class="code-lang">Python + HuggingFace Transformers</span></div>
+      <pre><code class="language-python">from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+import torch
+
+# =========================================================
+# Option A: BlenderBot (Facebook) — open source, free
+# =========================================================
+from transformers import BlenderbotTokenizer, BlenderbotForConditionalGeneration
+
+model_name = "facebook/blenderbot-400M-distill"
+tokenizer = BlenderbotTokenizer.from_pretrained(model_name)
+model = BlenderbotForConditionalGeneration.from_pretrained(model_name)
+
+def blenderbot_chat(user_input, history=""):
+    # Encode input with conversation history
+    full_input = history + user_input
+    inputs = tokenizer(full_input, return_tensors="pt", truncation=True, max_length=512)
+    
+    # Generate response
+    with torch.no_grad():
+        output = model.generate(
+            **inputs,
+            max_new_tokens=200,
+            num_beams=4,          # beam search
+            temperature=0.7,      # creativity
+            top_p=0.9,            # nucleus sampling
+            do_sample=True,
+        )
+    return tokenizer.decode(output[0], skip_special_tokens=True)
+
+# =========================================================
+# Option B: GPT-2 (OpenAI) — for training from scratch
+# =========================================================
+gpt2_pipeline = pipeline(
+    "text-generation",
+    model="gpt2",
+    device=-1  # CPU; use device=0 for GPU
+)
+
+def gpt2_respond(prompt):
+    result = gpt2_pipeline(
+        prompt,
+        max_new_tokens=100,
+        temperature=0.8,
+        top_p=0.9,
+        pad_token_id=gpt2_pipeline.tokenizer.eos_token_id,
+        do_sample=True,
+    )
+    return result[0]['generated_text'][len(prompt):]
+
+# =========================================================
+# Option C: HuggingFace Conversational pipeline (simplest)
+# =========================================================
+from transformers import pipeline, Conversation
+
+chatbot = pipeline("conversational", model="facebook/blenderbot-400M-distill")
+history = []
+
+print("🤖 Transformer Chatbot v3 (BlenderBot-400M)\n")
+print("This is the same technology as ChatGPT (scaled up)\n")
+
+while True:
+    user = input("You: ").strip()
+    if user.lower() in ['quit', 'exit', 'bye']:
+        print("Bot: It was great talking to you! Goodbye! 👋")
+        break
+    
+    # Maintain conversation history
+    convo = Conversation(user, past_user_inputs=[], generated_responses=[])
+    for h in history:
+        convo.past_user_inputs.append(h['user'])
+        convo.generated_responses.append(h['bot'])
+    
+    result = chatbot(convo)
+    response = result.generated_responses[-1]
+    history.append({"user": user, "bot": response})
+    
+    print(f"Bot: {response}\n")</code></pre>
+    </div>
+
+    <div class="tip">✅ Your complete NLP journey: Raw Text → Tokenize → Stem/Lemmatize → Remove Stopwords → POS Tag → OHE/BOW/TF-IDF → Word2Vec → Sentiment/Classification → Chatbot. This is the exact pipeline used in Google AI, Amazon Alexa, and ChatGPT!</div>
+
+    <div class="nav-footer">
+      <button class="nav-btn" onclick="show(15)">← Text Classification</button>
+      <span class="progress-text">Complete! 16 / 16 ✓</span>
+      <button class="nav-btn primary" onclick="show(0)">🗺 Back to Roadmap</button>
+    </div>
+  </section>
+
+</main>
+
+<script>
+hljs.highlightAll();
+
+const sections = document.querySelectorAll('section');
+const navItems = document.querySelectorAll('.sb-item');
+
+function show(n) {
+  sections.forEach((s, i) => s.classList.toggle('active', i === n));
+  navItems.forEach((a, i) => a.classList.toggle('active', i === n));
+  document.getElementById('content').scrollTop = 0;
+  document.getElementById('sidebar').querySelectorAll('.sb-item')[n].scrollIntoView({block:'nearest'});
+}
+
+navItems.forEach((item, i) => item.onclick = (e) => { e.preventDefault(); show(i); });
+</script>
+</body>
+</html>

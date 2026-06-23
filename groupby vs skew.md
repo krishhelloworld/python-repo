@@ -264,7 +264,7 @@ groupby('GarageType')
 
 # 🧠 ONE-LINE MEMORY
 
-```text id="mem"
+r``text id="mem"
 skew = single column behavior  
 groupby = relationship between columns  
 ```
