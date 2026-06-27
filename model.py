@@ -20,6 +20,16 @@ def data_quality_report(df):
         "dtypes": df.dtypes,
         "unique_counts": df.nunique()
     }
+def col_details(col):
+    return{
+        "min" : col.min(),
+        "max" : col.max(),
+        "mean" : col.mean(),
+        "median":col.median(),
+        "mode" : col.mode().tolist(),
+        "Variance" : col.var(),
+        "Stand. Dev": col.std()
+    }
 def md(text):
     st.markdown(f"{text}", unsafe_allow_html=True)
 md("<h1> merging the data </h1>")
@@ -56,10 +66,10 @@ st.write(f'df.shape=> {df.shape}')
 st.dataframe(df.head())
 options = st.selectbox("Choose Columns",df.columns)
 figOfOp,axOfOp= plt.subplots()
-try:
-    sns.heatmap(df[[f'{options}']],ax=axOfOp) 
-except ValueError:
-
+if options in df.select_dtypes(include='number').columns:
+    sns.heatmap(df.corr(numeric_only=True)[[options]], annot=True)
+else:
+    (f"{options} is NOT numeric, correlation not possible") 
     counts = df[options].fillna("NULL").value_counts()
     print(f"\033[32m{counts}[0m")   
     sns.barplot(x=counts.index, y=counts.values, ax=axOfOp)
