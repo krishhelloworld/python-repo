@@ -1,0 +1,197 @@
+table,field_name,type,unit,description,source,possible_range,nullable,known_at,synthetic_external_derived
+scenarios,scenario_id,uuid,,"Deterministic uuid5 of (generator_version, scenario_version, scenario_seed, config_hash)",simulator,,FALSE,static,synthetic
+scenarios,stage,integer,,Progression stage (0..12) that introduced this scenario family,simulator,>=0,FALSE,static,synthetic
+scenarios,difficulty_level,integer,,Curriculum difficulty level,simulator,12-Jan,FALSE,static,synthetic
+scenarios,scenario_category,text,,nominal | rare_event | adversarial | distribution_shift ...,simulator,,FALSE,static,synthetic
+scenarios,scenario_seed,integer,,"Seed driving procedural layout generation (Stage 0: recorded, unused)",simulator,,TRUE,static,synthetic
+scenarios,scenario_version,text,,Version of the scenario definition,simulator,,FALSE,static,synthetic
+scenarios,generator_version,text,,Version of the scenario generator code,simulator,,FALSE,static,synthetic
+scenarios,config,jsonb,,Full scenario configuration used by the generator (JSON),simulator,,FALSE,static,synthetic
+scenarios,config_hash,text,,sha256 of canonical JSON of config,simulator,64 hex chars,FALSE,static,synthetic
+scenarios,source_type,text,,synthetic | external | derived,simulator,synthetic|external|derived,FALSE,static,synthetic
+scenarios,schema_version,text,,ORBIT schema version,simulator,,FALSE,static,synthetic
+scenarios,created_at,timestamptz,,Wall-clock DB insert time. Audit only; excluded from content hash.,database,,FALSE,audit,n/a
+environments,environment_id,uuid,,Deterministic uuid5 derived from scenario_id,simulator,,FALSE,static,synthetic
+environments,scenario_id,uuid,,Scenario that produced this environment,simulator,,FALSE,static,synthetic
+environments,environment_type,text,,warehouse | factory | distribution_center | cross_dock | port | ...,simulator,,FALSE,static,synthetic
+environments,width,integer,cells,Grid width,simulator,>0,FALSE,static,synthetic
+environments,height,integer,cells,Grid height,simulator,>0,FALSE,static,synthetic
+environments,cell_size_m,double precision,m,Edge length of one grid cell,simulator,>0,FALSE,static,synthetic
+environments,map_representation,text,,"How the map is stored, e.g. occupancy_grid",simulator,,FALSE,static,synthetic
+environments,map_grid,jsonb,,"Occupancy grid rows, index [y][x]; '.' free, '#' blocked. Null if map_uri is used",simulator,,TRUE,static,synthetic
+environments,map_uri,text,,Path to large map stored outside PostgreSQL,simulator,,TRUE,static,synthetic
+environments,terrain_type,text,,"Floor/terrain class, e.g. smooth_concrete",simulator,,FALSE,static,synthetic
+environments,obstacle_density,double precision,fraction,Fraction of grid cells blocked at t=0,simulator,0-1,FALSE,static,synthetic
+environments,aisle_configuration,jsonb,,Aisle layout description (JSON),simulator,,FALSE,static,synthetic
+environments,charging_station_locations,jsonb,,"Charging station cells [{station_id,x,y}]",simulator,,FALSE,static,synthetic
+environments,loading_station_locations,jsonb,,"Loading station cells [{station_id,x,y}]",simulator,,FALSE,static,synthetic
+environments,delivery_station_locations,jsonb,,"Delivery station cells [{station_id,x,y}]",simulator,,FALSE,static,synthetic
+environments,environmental_conditions,jsonb,,Ambient conditions (JSON),simulator,,FALSE,static,synthetic
+environments,environment_version,text,,Version of the environment definition,simulator,,FALSE,static,synthetic
+environments,scenario_version,text,,Scenario version that produced this environment,simulator,,FALSE,static,synthetic
+environments,scenario_seed,integer,,Scenario seed that produced this environment,simulator,,TRUE,static,synthetic
+environments,generator_version,text,,Generator version that produced this environment,simulator,,FALSE,static,synthetic
+environments,source_type,text,,synthetic | external | derived,simulator,synthetic|external|derived,FALSE,static,synthetic
+environments,schema_version,text,,ORBIT schema version,simulator,,FALSE,static,synthetic
+environments,created_at,timestamptz,,Wall-clock DB insert time. Audit only; excluded from content hash.,database,,FALSE,audit,n/a
+episodes,episode_id,uuid,,"Deterministic uuid5 of (scenario_id, random_seed, simulator_version, robot_configuration_version)",simulator,,FALSE,static,synthetic
+episodes,scenario_id,uuid,,Scenario the episode was run in,simulator,,FALSE,static,synthetic
+episodes,environment_id,uuid,,Environment the episode was run in,simulator,,FALSE,static,synthetic
+episodes,random_seed,integer,,"Seed driving stochastic dynamics (Stage 0: recorded, unused)",simulator,,TRUE,static,synthetic
+episodes,generator_version,text,,Generator version,simulator,,FALSE,static,synthetic
+episodes,simulator_version,text,,Simulator version,simulator,,FALSE,static,synthetic
+episodes,environment_version,text,,Environment version,simulator,,FALSE,static,synthetic
+episodes,robot_configuration_version,text,,Version of robot fleet configuration,simulator,,FALSE,static,synthetic
+episodes,scenario_version,text,,Scenario version,simulator,,FALSE,static,synthetic
+episodes,schema_version,text,,ORBIT schema version,simulator,,FALSE,static,synthetic
+episodes,source_type,text,,synthetic | external | derived,simulator,synthetic|external|derived,FALSE,static,synthetic
+episodes,external_source_id,text,,external_sources.source_id when source_type=external,simulator,,TRUE,static,synthetic
+episodes,parent_dataset,text,,Parent dataset when source_type=derived,simulator,,TRUE,static,synthetic
+episodes,transformation_description,text,,How the data was derived when source_type=derived,simulator,,TRUE,static,synthetic
+episodes,sim_epoch,timestamptz,,Simulated-clock time corresponding to sim_time_s = 0 (NOT wall-clock time),simulator,,FALSE,static,synthetic
+episodes,tick_seconds,double precision,s,Simulation tick length,simulator,>0,FALSE,static,synthetic
+episodes,n_ticks,integer,,Number of simulated ticks (last sim_time_s / tick_seconds),simulator,,FALSE,episode_end,synthetic
+episodes,n_robots,integer,,Number of robots,simulator,,FALSE,episode_end,synthetic
+episodes,n_tasks,integer,,Number of tasks,simulator,,FALSE,episode_end,synthetic
+episodes,n_trajectory_rows,integer,,Number of trajectory rows,simulator,,FALSE,episode_end,synthetic
+episodes,termination_reason,text,,"Why the episode ended, e.g. all_tasks_completed",simulator,,FALSE,episode_end,synthetic
+episodes,content_sha256,text,,"sha256 over canonical content of all episode rows (excludes created_at, raw_uri, itself)",simulator,64 hex chars,FALSE,episode_end,synthetic
+episodes,raw_uri,text,,Relative path of the raw Parquet/manifest directory,simulator,,TRUE,episode_end,synthetic
+episodes,created_at,timestamptz,,Wall-clock DB insert time. Audit only; excluded from content hash.,database,,FALSE,audit,n/a
+robot_types,robot_type,text,,Robot class name,simulator,,FALSE,static,synthetic
+robot_types,description,text,,Human description,simulator,,FALSE,static,synthetic
+robot_types,introduced_in_stage,integer,,Stage that introduced this type,simulator,,FALSE,static,synthetic
+robot_types,max_speed_mps,double precision,m/s,Nominal maximum speed,simulator,>0,FALSE,static,synthetic
+robot_types,battery_capacity_wh,double precision,Wh,Nominal battery capacity,simulator,>0,FALSE,static,synthetic
+robot_types,payload_capacity_kg,double precision,kg,Nominal payload capacity,simulator,>=0,FALSE,static,synthetic
+robot_types,length_m,double precision,m,Body length,simulator,,FALSE,static,synthetic
+robot_types,width_m,double precision,m,Body width,simulator,,FALSE,static,synthetic
+robot_types,turning_radius_m,double precision,m,Minimum turning radius (0 = turns on the spot),simulator,>=0,FALSE,static,synthetic
+robot_types,operating_cost_per_hour,double precision,currency_units/h,Synthetic operating cost,simulator,>=0,FALSE,static,synthetic
+robot_types,communication_range_m,double precision,m,Radio range,simulator,,FALSE,static,synthetic
+robot_types,sensor_reliability,double precision,fraction,Probability a sensor reading is valid (1 = perfect),simulator,0-1,FALSE,static,synthetic
+robot_types,failure_probability_per_hour,double precision,1/h,Nominal breakdown probability,simulator,0-1,FALSE,static,synthetic
+robot_types,energy_per_meter_wh,double precision,Wh/m,Energy consumed per metre travelled,simulator,>=0,FALSE,static,synthetic
+robot_types,idle_power_w,double precision,W,Baseline power draw (always on),simulator,>=0,FALSE,static,synthetic
+robots,source_type,text,,"Whether the row is synthetic, external, or derived data",simulator,synthetic|external|derived,FALSE,static,synthetic
+robots,schema_version,text,,Version of the ORBIT schema the row was written under,simulator,,FALSE,static,synthetic
+robots,episode_id,uuid,,Owning episode,simulator,,FALSE,static,synthetic
+robots,robot_id,text,,"Robot identifier within the episode, e.g. R1",simulator,,FALSE,static,synthetic
+robots,robot_type,text,,FK to robot_types,simulator,,FALSE,static,synthetic
+robots,initial_x,double precision,m,Start x,simulator,,FALSE,static,synthetic
+robots,initial_y,double precision,m,Start y,simulator,,FALSE,static,synthetic
+robots,initial_velocity,double precision,m/s,Start speed,simulator,,FALSE,static,synthetic
+robots,initial_acceleration,double precision,m/s^2,Start acceleration,simulator,,FALSE,static,synthetic
+robots,max_speed_mps,double precision,m/s,Effective max speed of THIS robot,simulator,>0,FALSE,static,synthetic
+robots,battery_capacity_wh,double precision,Wh,Effective battery capacity,simulator,>0,FALSE,static,synthetic
+robots,initial_battery_wh,double precision,Wh,Battery at t=0,simulator,0-battery_capacity_wh,FALSE,static,synthetic
+robots,payload_capacity_kg,double precision,kg,Effective payload capacity,simulator,>=0,FALSE,static,synthetic
+robots,length_m,double precision,m,Body length,simulator,,FALSE,static,synthetic
+robots,width_m,double precision,m,Body width,simulator,,FALSE,static,synthetic
+robots,turning_radius_m,double precision,m,Turning radius,simulator,>=0,FALSE,static,synthetic
+robots,operating_cost_per_hour,double precision,currency_units/h,Operating cost,simulator,>=0,FALSE,static,synthetic
+robots,communication_range_m,double precision,m,Radio range,simulator,,FALSE,static,synthetic
+robots,sensor_reliability,double precision,fraction,Sensor validity probability,simulator,0-1,FALSE,static,synthetic
+robots,failure_probability_per_hour,double precision,1/h,Breakdown probability,simulator,0-1,FALSE,static,synthetic
+robots,energy_per_meter_wh,double precision,Wh/m,Energy per metre travelled,simulator,>=0,FALSE,static,synthetic
+robots,idle_power_w,double precision,W,Baseline power draw,simulator,>=0,FALSE,static,synthetic
+robots,initial_maintenance_state,text,,"Maintenance state at t=0, e.g. nominal",simulator,,FALSE,static,synthetic
+robots,initial_status,text,,Status at t=0 BEFORE events at t=0 are applied,simulator,,FALSE,static,synthetic
+robots,initial_task_id,text,,Task held at t=0 (none in Stage 0),simulator,,TRUE,static,synthetic
+robots,created_at,timestamptz,,Wall-clock DB insert time. Audit only; excluded from content hash.,database,,FALSE,audit,n/a
+tasks,source_type,text,,"Whether the row is synthetic, external, or derived data",simulator,synthetic|external|derived,FALSE,static,synthetic
+tasks,schema_version,text,,Version of the ORBIT schema the row was written under,simulator,,FALSE,static,synthetic
+tasks,episode_id,uuid,,Owning episode,simulator,,FALSE,static,synthetic
+tasks,task_id,text,,"Task identifier within the episode, e.g. T1",simulator,,FALSE,static,synthetic
+tasks,task_type,text,,single | multi_step | dependent | urgent | ...,simulator,,FALSE,static,synthetic
+tasks,priority,integer,,1 (lowest) .. 5 (highest),simulator,5-Jan,FALSE,creation,synthetic
+tasks,creation_time_s,double precision,s,Time the task was created,simulator,,FALSE,creation,synthetic
+tasks,pickup_x,integer,cells,Pickup cell x,simulator,,FALSE,creation,synthetic
+tasks,pickup_y,integer,cells,Pickup cell y,simulator,,FALSE,creation,synthetic
+tasks,destination_x,integer,cells,Destination cell x,simulator,,FALSE,creation,synthetic
+tasks,destination_y,integer,cells,Destination cell y,simulator,,FALSE,creation,synthetic
+tasks,payload_kg,double precision,kg,Payload mass,simulator,>=0,FALSE,creation,synthetic
+tasks,deadline_s,double precision,s,Absolute sim-time deadline,simulator,,TRUE,creation,synthetic
+tasks,expected_service_time_s,double precision,s,PLANNER's estimate of service time at assignment (path length / max speed),planner,,TRUE,assignment,synthetic
+tasks,actual_service_time_s,double precision,s,completion_time_s - assignment_time_s (LABEL: leaks outcome),simulator,,TRUE,completion,synthetic
+tasks,assigned_robot_id,text,,Robot the task was assigned to,simulator,,TRUE,assignment,synthetic
+tasks,assignment_time_s,double precision,s,Time of assignment,simulator,,TRUE,assignment,synthetic
+tasks,completion_time_s,double precision,s,Time of completion (LABEL: leaks outcome),simulator,,TRUE,completion,synthetic
+tasks,cancelled,boolean,,Whether the task was cancelled,simulator,,FALSE,completion,synthetic
+tasks,cancellation_time_s,double precision,s,Time of cancellation,simulator,,TRUE,completion,synthetic
+tasks,delay_s,double precision,s,actual_service_time_s - expected_service_time_s (negative = early),simulator,,TRUE,completion,synthetic
+tasks,failed,boolean,,Whether the task failed,simulator,,FALSE,completion,synthetic
+tasks,failure_reason,text,,Reason for failure,simulator,,TRUE,completion,synthetic
+tasks,depends_on,jsonb,,task_ids that must complete first (JSON list),simulator,,FALSE,creation,synthetic
+tasks,created_at,timestamptz,,Wall-clock DB insert time. Audit only; excluded from content hash.,database,,FALSE,audit,n/a
+charging_stations,source_type,text,,"Whether the row is synthetic, external, or derived data",simulator,synthetic|external|derived,FALSE,static,synthetic
+charging_stations,schema_version,text,,Version of the ORBIT schema the row was written under,simulator,,FALSE,static,synthetic
+charging_stations,episode_id,uuid,,Owning episode,simulator,,FALSE,static,synthetic
+charging_stations,station_id,text,,"Station identifier, e.g. C1",simulator,,FALSE,static,synthetic
+charging_stations,x,integer,cells,Cell x,simulator,,FALSE,static,synthetic
+charging_stations,y,integer,cells,Cell y,simulator,,FALSE,static,synthetic
+charging_stations,power_w,double precision,W,Charging power,simulator,>0,FALSE,static,synthetic
+charging_stations,n_slots,integer,,Simultaneous charging slots,simulator,>0,FALSE,static,synthetic
+charging_stations,created_at,timestamptz,,Wall-clock DB insert time. Audit only; excluded from content hash.,database,,FALSE,audit,n/a
+obstacles,source_type,text,,"Whether the row is synthetic, external, or derived data",simulator,synthetic|external|derived,FALSE,static,synthetic
+obstacles,schema_version,text,,Version of the ORBIT schema the row was written under,simulator,,FALSE,static,synthetic
+obstacles,episode_id,uuid,,Owning episode,simulator,,FALSE,static,synthetic
+obstacles,obstacle_id,text,,"Obstacle identifier, e.g. O1",simulator,,FALSE,static,synthetic
+obstacles,obstacle_kind,text,,wall | shelf | fallen_package | ...,simulator,,FALSE,static,synthetic
+obstacles,cause,text,,Why the obstacle exists (fixed_infrastructure for static ones),simulator,,FALSE,static,synthetic
+obstacles,is_static,boolean,,True if part of the layout from t=0 and never removed,simulator,,FALSE,static,synthetic
+obstacles,x_min,integer,cells,Rectangle min x (inclusive),simulator,,FALSE,static,synthetic
+obstacles,y_min,integer,cells,Rectangle min y (inclusive),simulator,,FALSE,static,synthetic
+obstacles,x_max,integer,cells,Rectangle max x (inclusive),simulator,,FALSE,static,synthetic
+obstacles,y_max,integer,cells,Rectangle max y (inclusive),simulator,,FALSE,static,synthetic
+obstacles,appear_time_s,double precision,s,Time obstacle appears,simulator,,FALSE,static,synthetic
+obstacles,remove_time_s,double precision,s,Time obstacle is removed (null = never),simulator,,TRUE,static,synthetic
+obstacles,created_at,timestamptz,,Wall-clock DB insert time. Audit only; excluded from content hash.,database,,FALSE,audit,n/a
+task_events,source_type,text,,"Whether the row is synthetic, external, or derived data",simulator,synthetic|external|derived,FALSE,static,synthetic
+task_events,schema_version,text,,Version of the ORBIT schema the row was written under,simulator,,FALSE,static,synthetic
+task_events,episode_id,uuid,,Owning episode,simulator,,FALSE,static,synthetic
+task_events,event_seq,integer,,Per-episode monotone counter shared by all event tables (total order),simulator,>=0,FALSE,static,synthetic
+task_events,event_type,text,,FK to event_types,simulator,,FALSE,static,synthetic
+task_events,sim_time_s,double precision,s,Event time on the simulated clock,simulator,,FALSE,static,synthetic
+task_events,timestamp,timestamptz,,sim_epoch + sim_time_s (simulated clock),simulator,,FALSE,static,synthetic
+task_events,payload,jsonb,,Event-specific details (JSON),simulator,,FALSE,static,synthetic
+task_events,task_id,text,,Task concerned,simulator,,FALSE,static,synthetic
+task_events,robot_id,text,,"Robot concerned, if any",simulator,,TRUE,static,synthetic
+task_events,created_at,timestamptz,,Wall-clock DB insert time. Audit only; excluded from content hash.,database,,FALSE,audit,n/a
+robot_events,source_type,text,,"Whether the row is synthetic, external, or derived data",simulator,synthetic|external|derived,FALSE,static,synthetic
+robot_events,schema_version,text,,Version of the ORBIT schema the row was written under,simulator,,FALSE,static,synthetic
+robot_events,episode_id,uuid,,Owning episode,simulator,,FALSE,static,synthetic
+robot_events,event_seq,integer,,Per-episode monotone counter shared by all event tables (total order),simulator,>=0,FALSE,static,synthetic
+robot_events,event_type,text,,FK to event_types,simulator,,FALSE,static,synthetic
+robot_events,sim_time_s,double precision,s,Event time on the simulated clock,simulator,,FALSE,static,synthetic
+robot_events,timestamp,timestamptz,,sim_epoch + sim_time_s (simulated clock),simulator,,FALSE,static,synthetic
+robot_events,payload,jsonb,,Event-specific details (JSON),simulator,,FALSE,static,synthetic
+robot_events,robot_id,text,,Robot concerned,simulator,,FALSE,static,synthetic
+robot_events,task_id,text,,"Task concerned, if any",simulator,,TRUE,static,synthetic
+robot_events,created_at,timestamptz,,Wall-clock DB insert time. Audit only; excluded from content hash.,database,,FALSE,audit,n/a
+obstacle_events,source_type,text,,"Whether the row is synthetic, external, or derived data",simulator,synthetic|external|derived,FALSE,static,synthetic
+obstacle_events,schema_version,text,,Version of the ORBIT schema the row was written under,simulator,,FALSE,static,synthetic
+obstacle_events,episode_id,uuid,,Owning episode,simulator,,FALSE,static,synthetic
+obstacle_events,event_seq,integer,,Per-episode monotone counter shared by all event tables (total order),simulator,>=0,FALSE,static,synthetic
+obstacle_events,event_type,text,,FK to event_types,simulator,,FALSE,static,synthetic
+obstacle_events,sim_time_s,double precision,s,Event time on the simulated clock,simulator,,FALSE,static,synthetic
+obstacle_events,timestamp,timestamptz,,sim_epoch + sim_time_s (simulated clock),simulator,,FALSE,static,synthetic
+obstacle_events,payload,jsonb,,Event-specific details (JSON),simulator,,FALSE,static,synthetic
+obstacle_events,obstacle_id,text,,Obstacle concerned,simulator,,FALSE,static,synthetic
+obstacle_events,created_at,timestamptz,,Wall-clock DB insert time. Audit only; excluded from content hash.,database,,FALSE,audit,n/a
+trajectories,source_type,text,,"Whether the row is synthetic, external, or derived data",simulator,synthetic|external|derived,FALSE,static,synthetic
+trajectories,schema_version,text,,Version of the ORBIT schema the row was written under,simulator,,FALSE,static,synthetic
+trajectories,episode_id,uuid,,Owning episode,simulator,,FALSE,static,synthetic
+trajectories,robot_id,text,,Robot,simulator,,FALSE,static,synthetic
+trajectories,sim_time_s,double precision,s,Tick time on the simulated clock,simulator,,FALSE,row_time,synthetic
+trajectories,timestamp,timestamptz,,sim_epoch + sim_time_s,simulator,,FALSE,row_time,synthetic
+trajectories,x,double precision,m,"Position x = cell_x * cell_size_m (cell anchor, not centre)",simulator,,FALSE,row_time,synthetic
+trajectories,y,double precision,m,Position y = cell_y * cell_size_m,simulator,,FALSE,row_time,synthetic
+trajectories,velocity,double precision,m/s,"Average speed over (t-dt, t]; 0 at t=0 (backward difference)",simulator,>=0,FALSE,row_time,synthetic
+trajectories,acceleration,double precision,m/s^2,(velocity_t - velocity_{t-dt}) / dt,simulator,,FALSE,row_time,synthetic
+trajectories,battery_wh,double precision,Wh,Remaining battery (true simulator value in Stage 0),simulator,>=0,FALSE,row_time,synthetic
+trajectories,current_task_id,text,,Task being executed after events at t are applied,simulator,,TRUE,row_time,synthetic
+trajectories,status,text,,Robot status after events at t are applied,simulator,,FALSE,row_time,synthetic
+trajectories,nearby_robot_count,integer,,Other robots within the neighbourhood radius (0 by construction in Stage 0),simulator,>=0,FALSE,row_time,synthetic
+trajectories,local_congestion,double precision,index,Local congestion index (0 by construction in Stage 0),simulator,>=0,FALSE,row_time,synthetic
+trajectories,created_at,timestamptz,,Wall-clock DB insert time. Audit only; excluded from content hash.,database,,FALSE,audit,n/a

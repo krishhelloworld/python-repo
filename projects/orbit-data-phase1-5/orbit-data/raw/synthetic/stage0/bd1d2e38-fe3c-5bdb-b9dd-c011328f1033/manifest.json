@@ -1,0 +1,29 @@
+{
+  "content_sha256": "fa396c03b073823bdd5618bc7e453e04220c3af8f85a94ba5be87a7ed4be24c1",
+  "episode_id": "bd1d2e38-fe3c-5bdb-b9dd-c011328f1033",
+  "files": {
+    "robot_events.parquet": {
+      "rows": 2,
+      "sha256": "27dbecb8315e096164ef7dd90339a9df24bdefb0b325979b05aa20ac09dc4f18"
+    },
+    "task_events.parquet": {
+      "rows": 3,
+      "sha256": "080188aeae237f2f2c2020d25a8588fb307410f91892c212d8d139270906b7ea"
+    },
+    "trajectories.parquet": {
+      "rows": 32,
+      "sha256": "43d08606ce949c8373c641d42eafeefa0bb9f47bfd24bce9ec106f4cfb631680"
+    }
+  },
+  "note": "RAW layer: synthetic data, unmodified simulator output. Do not edit.",
+  "provenance": {
+    "orbit.episode_id": "bd1d2e38-fe3c-5bdb-b9dd-c011328f1033",
+    "orbit.generator_version": "stage0-gen-0.1.0",
+    "orbit.random_seed": "0",
+    "orbit.scenario_version": "stage0-fixed-v1",
+    "orbit.schema_version": "0.1.0",
+    "orbit.simulator_version": "orbit-sim-0.1.0",
+    "orbit.source_type": "synthetic"
+  },
+  "sim_epoch": "2026-01-05T08:00:00+00:00"
+}

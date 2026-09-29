@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "orbit-data"
+version = "0.1.0"
+description = "ORBIT progressive multi-source data & scenario generation laboratory"
+requires-python = ">=3.11"
+dependencies = ["pydantic>=2.5", "psycopg[binary]>=3.1", "pyarrow>=14", "numpy", "pandas"]
+
+[project.optional-dependencies]
+dev = ["pytest", "pgserver"]   # pgserver = embedded PostgreSQL, for tests / local dev only
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
