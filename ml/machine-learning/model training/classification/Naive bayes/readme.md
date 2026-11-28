@@ -13,3 +13,14 @@
 
 - ![Type of probability distirubution](assets/Types_of_probab_dist.png){width=63}
 - ![probability question on multinomial probability](assets/multinomial_question.png){width=65}
+
+ 
+## DOING CODE-;
+
+- FIRST CLEAN THE SENTENCE 
+    - IF IT IS EXTRACTED FROM THE HTML,OR ANYTHING REMOVE THE < / > ,ETC
+    - IF IT HAVE ALNUM() TEXT REMOVE IT (/,@!#),etc
+    - remove the stopwords from the nltk.corpus.
+    - lower the words in the sentence.
+- THEN START TO MAKE THESE WORDS A COLUMN -> CountVectorizer(stop_words='english')
+
